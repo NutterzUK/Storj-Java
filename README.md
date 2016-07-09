@@ -7,7 +7,7 @@ It relies on the storj-bridge-rest-client which handles HTTP requests to the sto
 If you are looking to include a storj client in your project, you'll want the storj-client project. 
 If you are ONLY looking for handling HTTP requests and wish to implement file sharding and encryption yourself, you may use the storj-bridge-rest-client.
 
-
+.
 |-- Parent project
 |   |-- Storj-client
 |   |   |-- Storj-bridge-rest-client
