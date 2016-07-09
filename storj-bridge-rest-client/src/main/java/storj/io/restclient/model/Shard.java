@@ -1,5 +1,7 @@
 package storj.io.restclient.model;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 import java.util.List;
 
 /**
@@ -10,9 +12,20 @@ public class Shard {
     String _id;
     int index;
     String hash;
-    int size;
+    long size;
     List<String> tree;
     List<String> challenges;
+
+    @JsonIgnore
+    String path;
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
 
     public String get_id() {
         return _id;
@@ -38,11 +51,11 @@ public class Shard {
         this.hash = hash;
     }
 
-    public int getSize() {
+    public long getSize() {
         return size;
     }
 
-    public void setSize(int size) {
+    public void setSize(long size) {
         this.size = size;
     }
 

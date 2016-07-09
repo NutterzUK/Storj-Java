@@ -14,5 +14,6 @@
 		<module>storj-bridge-rest-client</module>
 		<module>storj-client</module>
 	</modules>
-	
+
+
 </project>
