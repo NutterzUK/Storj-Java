@@ -243,12 +243,12 @@ public class StorjRestClient {
      * @param shard the shard to add.
      * @return the Frame with the shard added.
      */
-    public Frame addShardToFrame(String frameId, Shard shard){
+    public AddShardResponse addShardToFrame(String frameId, Shard shard){
         String requestUrl = STORJ_API_FRAMES + "/" + frameId;
         WebResource.Builder builder = jerseyClient.resource(requestUrl).accept(MediaType.APPLICATION_JSON);
         builder.entity(shard, MediaType.APPLICATION_JSON);
         builder = auth.setRequiredAuthHeaders(builder);
-        return builder.put(Frame.class);
+        return builder.put(AddShardResponse.class);
     }
 
     /**

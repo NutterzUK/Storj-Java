@@ -2,6 +2,7 @@ package storj.io.restclient.model;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -13,8 +14,8 @@ public class Shard {
     int index;
     String hash;
     long size;
-    List<String> tree;
-    List<String> challenges;
+    List<String> tree = new ArrayList<String>();
+    List<String> challenges = new ArrayList<String>();
 
     @JsonIgnore
     String path;
