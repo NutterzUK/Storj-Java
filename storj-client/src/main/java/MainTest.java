@@ -39,9 +39,6 @@ public class MainTest {
             e.printStackTrace();
         }
 
-
-        System.exit(1);
-
 /*
         String encryptionPassword = "MZygpewJsCpRrfOr";
         StorjRestClient client = new StorjRestClient("steveswfc@gmail.com", "MYPASS");
