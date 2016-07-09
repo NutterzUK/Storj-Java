@@ -1,3 +1,4 @@
+import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
 import com.google.common.primitives.Bytes;
 import org.bouncycastle.crypto.digests.RIPEMD160Digest;
@@ -29,10 +30,10 @@ public class MainTest {
             byte[] fileBytes =  Files.readAllBytes(inputFile.toPath());
 
             // the challenge + file.
-            byte[] toHash = Bytes.concat("103ae9a37613aab740249a1258709b8fa113119fcceee261f9aa386707e30a7a".getBytes(), fileBytes);
+            byte[] toHash = Bytes.concat(Hex.encode("103ae9a37613aab740249a1258709b8fa113119fcceee261f9aa386707e30a7a".getBytes(Charsets.UTF_8)), fileBytes);
 
             // Print out the RMD160(SHA256(RMD160(SHA256(challenge + shard))))
-            System.out.println(new String(Utils.rmd160Sha256(Utils.rmd160Sha256(toHash))));
+            System.out.println(new String(Utils.rmd160Sha256(toHash)));
 
 
         } catch (IOException e) {

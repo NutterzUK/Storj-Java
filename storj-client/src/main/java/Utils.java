@@ -69,13 +69,13 @@ public class Utils {
     public static void addChallenges(Shard shard, int shardLength, byte[] shardData, int numberOfChallenges){
         for(int i = 0; i< numberOfChallenges; i++) {
             String randomChallenge = getRandomChallengeString();
-            byte[] challengeBytes = randomChallenge.getBytes();
+            byte[] challengeBytes = randomChallenge.getBytes(Charsets.UTF_8);
 
             // trim empty space at the end of shardData.
             shardData = Arrays.copyOf(shardData, shardLength);
 
             // Data to hash = challenge + shard data.
-            byte[] dataToHash = Bytes.concat(challengeBytes, shardData);
+            byte[] dataToHash = Hex.encode(Bytes.concat(challengeBytes, shardData));
 
             // RMD160(SHA256(RMD160(SHA256(challenge + shard))))
             byte[] tree = rmd160Sha256(rmd160Sha256(dataToHash));
