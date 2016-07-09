@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>storj</groupId>
+    <artifactId>storj-bridge-rest-client</artifactId>
+    <version>0.1</version>
+    <packaging>jar</packaging>
+
+    <name>Java based rest client for the Storj project.</name>
+    <url>http://storj.io</url>
+
+    <developers>
+        <developer>
+            <id>NutterzUK</id>
+            <name>Stephen Nutbrown</name>
+            <email>steveswfc@gmail.com</email>
+            <roles>
+                <role>developer</role>
+            </roles>
+            <timezone>Europe/London</timezone>
+            <properties>
+                <picUrl>http://www.spindroid.co.uk/imageHost/me.jpg</picUrl>
+            </properties>
+        </developer>
+    </developers>
+	
+	<parent>
+		<groupId>storj</groupId>
+		<artifactId>parent-project</artifactId>
+		<version>1.0-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+
+    <dependencies>
+
+        <!-- https://mvnrepository.com/artifact/com.sun.jersey/jersey-client -->
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-client</artifactId>
+            <version>1.19.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-json</artifactId>
+            <version>1.19.1</version>
+        </dependency>
+
+        <!-- Being used for hashing etc -->
+        <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>19.0</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>RELEASE</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+</project>
