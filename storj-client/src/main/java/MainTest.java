@@ -3,16 +3,21 @@ import com.google.common.hash.Hashing;
 import com.google.common.primitives.Bytes;
 import org.bouncycastle.crypto.digests.RIPEMD160Digest;
 import org.bouncycastle.util.encoders.Hex;
+import org.glassfish.tyrus.client.ClientManager;
 import storj.io.restclient.model.AddShardResponse;
 import storj.io.restclient.model.Frame;
 import storj.io.restclient.model.Shard;
 import storj.io.restclient.rest.StorjRestClient;
 
+import javax.websocket.DeploymentException;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * Created by Stephen Nutbrown on 09/07/2016.
@@ -24,25 +29,10 @@ public class MainTest {
     public static void main(String[] args){
         File inputFile = new File("C:\\Users\\steve\\Desktop\\storj-java-bridge-client.zip");
 
-        try {
-
-            // My shard.
-            byte[] fileBytes =  Files.readAllBytes(inputFile.toPath());
-
-            // the challenge + file.
-            byte[] toHash = Bytes.concat(Hex.encode("103ae9a37613aab740249a1258709b8fa113119fcceee261f9aa386707e30a7a".getBytes(Charsets.UTF_8)), fileBytes);
-
-            // Print out the RMD160(SHA256(RMD160(SHA256(challenge + shard))))
-            System.out.println(new String(Utils.rmd160Sha256(toHash)));
 
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-/*
         String encryptionPassword = "MZygpewJsCpRrfOr";
-        StorjRestClient client = new StorjRestClient("steveswfc@gmail.com", "MYPASS");
+        StorjRestClient client = new StorjRestClient("USER", "PASSWORD");
 
 
         // TREE LEAVES ARE (EACH CHALLENGE)
@@ -65,13 +55,25 @@ public class MainTest {
             List<AddShardResponse> addShardResponses = new ArrayList<AddShardResponse>();
             Frame frame = client.createFrame();
             for(Shard shard : shards){
-                System.out.println((client.addShardToFrame(frame.getId(), shard)));
+
+                AddShardResponse response = client.addShardToFrame(frame.getId(), shard);
+
+                String address = "ws://" + response.getFarmer().getAddress() + ":" + response.getFarmer().getPort();
+
+                CountDownLatch latch;
+                latch = new CountDownLatch(1);
+
+                ClientManager wsClient = ClientManager.createClient();
+                try {
+                    wsClient.connectToServer(new StorjWebsocketClient(shard, response), null, new URI(address));
+                    latch.await();
+                } catch (Exception  e) {
+                    throw new RuntimeException(e);
+                }
+
             }
 
-
-
-
-            // get it again.
+            // push the data.
 
 
             // Remake it
@@ -83,6 +85,6 @@ public class MainTest {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        */
+
     }
 }

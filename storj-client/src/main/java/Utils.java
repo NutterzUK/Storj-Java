@@ -1,5 +1,4 @@
 import com.google.common.base.Charsets;
-import com.google.common.collect.Iterables;
 import com.google.common.hash.Hashing;
 import com.google.common.primitives.Bytes;
 import org.bouncycastle.crypto.digests.RIPEMD160Digest;
@@ -35,7 +34,7 @@ public class Utils {
     public static List<Shard> shardFile(File input, int shardSize) throws Exception {
         ArrayList<Shard> shards = new ArrayList<Shard>();
 
-        int numChallenges = 10;
+        int numChallenges = 8;
 
         FileInputStream inputStream = new FileInputStream(input);
         byte[] buffer = new byte[shardSize];
