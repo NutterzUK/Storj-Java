@@ -4,9 +4,7 @@ import com.google.common.primitives.Bytes;
 import org.bouncycastle.crypto.digests.RIPEMD160Digest;
 import org.bouncycastle.util.encoders.Hex;
 import org.glassfish.tyrus.client.ClientManager;
-import storj.io.restclient.model.AddShardResponse;
-import storj.io.restclient.model.Frame;
-import storj.io.restclient.model.Shard;
+import storj.io.restclient.model.*;
 import storj.io.restclient.rest.StorjRestClient;
 
 import javax.websocket.DeploymentException;
@@ -29,14 +27,8 @@ public class MainTest {
     public static void main(String[] args){
         File inputFile = new File("C:\\Users\\steve\\Desktop\\storj-java-bridge-client.zip");
 
-
-
         String encryptionPassword = "MZygpewJsCpRrfOr";
-        StorjRestClient client = new StorjRestClient("USER", "PASSWORD");
-
-
-        // TREE LEAVES ARE (EACH CHALLENGE)
-        //RMD160(SHA256(RMD160(SHA256(challenge + shard))))
+        StorjRestClient client = new StorjRestClient("http://localhost:6382", "steveswfc@gmail.com", "testpassword");
 
         try {
             // Create encrypted file.
@@ -64,6 +56,7 @@ public class MainTest {
                 latch = new CountDownLatch(1);
 
                 ClientManager wsClient = ClientManager.createClient();
+
                 try {
                     wsClient.connectToServer(new StorjWebsocketClient(shard, response), null, new URI(address));
                     latch.await();

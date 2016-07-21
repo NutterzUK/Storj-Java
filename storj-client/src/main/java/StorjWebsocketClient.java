@@ -8,6 +8,8 @@ import storj.io.restclient.model.Shard;
 import javax.websocket.*;
 import java.io.*;
 import java.net.URI;
+import java.nio.ByteBuffer;
+import java.nio.LongBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -47,14 +49,21 @@ public class StorjWebsocketClient{
     @OnOpen
     public void onOpen(Session session, EndpointConfig endpointConfig) {
         logger.info("Connected ... " + session.getId());
-
+        File shardFile = new File(shard.getPath());
         try {
+
+            // send auth as text.
             logger.info("Sending: " + gson.toJson(authModel));
-            session.getBasicRemote().sendText(gson.toJson(authModel));
-            logger.info("Sent: " + gson.toJson(authModel));
-            Files.copy(Paths.get(shard.getPath()), session.getBasicRemote().getSendStream());
-            logger.info("Sent file");
-            session.close();
+            session.getBasicRemote().sendText(gson.toJson(authModel), true);
+
+            // send shard data as binary - note this will need changing to read in small amounts to save memory.. when it's working.
+            ByteBuffer fileBuffer = ByteBuffer.allocate((int)shardFile.length());
+            fileBuffer.put(Files.readAllBytes(shardFile.toPath()));
+            session.getBasicRemote().sendBinary(fileBuffer, true);
+            logger.info("Sent");
+
+         //   Files.copy(Paths.get(shard.getPath()), session.getBasicRemote().getSendStream());
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

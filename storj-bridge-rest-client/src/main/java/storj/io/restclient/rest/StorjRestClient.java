@@ -24,25 +24,25 @@ import java.util.Map;
 public class StorjRestClient {
 
     // Storj API root.
-    public static String STORJ_API_ROOT = "https://api.storj.io";
+    private static String apiRoot;
 
     // Contact end points
-    public static String STORJ_API_CONTACTS = STORJ_API_ROOT + "/contacts";
+    private String storjApiContacts;
 
     // User end points.
-    public static String STORJ_API_USERS = STORJ_API_ROOT + "/users";
-    public static String STORJ_API_USERS_PASS_RESET = STORJ_API_USERS + "/resets";
-    public static String STORJ_API_USERS_ACTIVATE = STORJ_API_USERS + "/activations";
-    public static String STORJ_API_USERS_DEACTIVATE = STORJ_API_USERS + "/deactivations";
+    private String storjApiUsers;
+    private String storjApiUsersPassReset;
+    private String storjApiUsersActivate;
+    private String storjApiUsersDeactivate;
 
     // Keys
-    public static String STORJ_API_KEYS = STORJ_API_ROOT + "/keys";
+    private String storjApiKeys = apiRoot + "/keys";
 
     // Frames
-    public static String STORJ_API_FRAMES = STORJ_API_ROOT + "/frames";
+    private String storjApiFrames = apiRoot + "/frames";
 
     // Buckets
-    public static String STORJ_API_BUCKETS = STORJ_API_ROOT + "/buckets";
+    private String storjApiBuckets = apiRoot + "/buckets";
 
     private Client jerseyClient;
 
@@ -55,9 +55,10 @@ public class StorjRestClient {
     /**
      * Create a storj restclient with no authentication mechanism.
      */
-    public StorjRestClient(){
+    public StorjRestClient(String apiRoot){
+        setApiRoot(apiRoot);
+        this.auth = new NoAuthType();
         configureJersey();
-        auth = new NoAuthType();
     }
 
     /**
@@ -65,9 +66,22 @@ public class StorjRestClient {
      * @param userEmail
      * @param password
      */
-    public StorjRestClient(String userEmail, String password){
+    public StorjRestClient(String apiRoot, String userEmail, String password){
+        setApiRoot(apiRoot);
         configureJersey();
         auth = new BasicAuthType(userEmail, password);
+    }
+
+    private void setApiRoot(String apiRoot){
+        this.apiRoot = apiRoot;
+        storjApiContacts = apiRoot + "/contacts";
+        storjApiUsers = apiRoot + "/users";
+        storjApiUsersPassReset = storjApiUsers + "/resets";
+        storjApiUsersActivate = apiRoot + "/activations";
+        storjApiUsersDeactivate = storjApiUsers + "/deactivations";
+        storjApiKeys = apiRoot + "/keys";
+        storjApiFrames = apiRoot + "/frames";
+        storjApiBuckets = apiRoot + "/buckets";
     }
 
     /**
@@ -79,7 +93,7 @@ public class StorjRestClient {
     public List<Contact> getContacts(int pagination, boolean connected){
         String queryParamPage = "page=" + pagination;
         String queryParamConnected = connected ? "connected=1" : "connected=0";
-        String requestUrl = STORJ_API_CONTACTS + "?" + queryParamPage + "&" + queryParamConnected;
+        String requestUrl = storjApiContacts + "?" + queryParamPage + "&" + queryParamConnected;
         WebResource.Builder builder = jerseyClient.resource(requestUrl).accept(MediaType.APPLICATION_JSON);
         return auth.setRequiredAuthHeaders(builder).get(new GenericType<List<Contact>>(){});
     }
@@ -90,7 +104,7 @@ public class StorjRestClient {
      * @return The contact.
      */
     public Contact getContact(String nodeID){
-        String requestUrl = STORJ_API_CONTACTS + "/" + nodeID;
+        String requestUrl = storjApiContacts + "/" + nodeID;
         WebResource.Builder builder = jerseyClient.resource(requestUrl).accept(MediaType.APPLICATION_JSON);
         return auth.setRequiredAuthHeaders(builder).get(Contact.class);
     }
@@ -101,7 +115,7 @@ public class StorjRestClient {
      * @return The user.
      */
     public User createUser(User user){
-        String requestUrl = STORJ_API_USERS;
+        String requestUrl = storjApiUsers;
         WebResource.Builder builder = jerseyClient.resource(requestUrl).accept(MediaType.APPLICATION_JSON);
         builder.entity(user, MediaType.APPLICATION_JSON);
         builder = auth.setRequiredAuthHeaders(builder);
@@ -113,7 +127,7 @@ public class StorjRestClient {
      * @param userEmail the user to delete.
      */
     public void deleteUser(String userEmail){
-        String requestUrl = STORJ_API_USERS + "/" + userEmail;
+        String requestUrl = storjApiUsers + "/" + userEmail;
         WebResource.Builder builder = jerseyClient.resource(requestUrl).accept(MediaType.APPLICATION_JSON);
         builder = auth.setRequiredAuthHeaders(builder);
         builder.delete();
@@ -124,7 +138,7 @@ public class StorjRestClient {
      * @param userEmail the users email to reset.
      */
     public void resetPassword(String userEmail){
-        String requestUrl = STORJ_API_USERS + "/" + userEmail;
+        String requestUrl = storjApiUsers + "/" + userEmail;
         WebResource.Builder builder = jerseyClient.resource(requestUrl).accept(MediaType.APPLICATION_JSON);
         builder = auth.setRequiredAuthHeaders(builder);
         builder.method("PATCH", String.class);
@@ -136,7 +150,7 @@ public class StorjRestClient {
      * @return the User if OK
      */
     public User confirmPasswordReset(String token){
-        String requestUrl = STORJ_API_USERS_PASS_RESET + "/" + token;
+        String requestUrl = storjApiUsersPassReset + "/" + token;
         WebResource.Builder builder = jerseyClient.resource(requestUrl).accept(MediaType.APPLICATION_JSON);
         builder = auth.setRequiredAuthHeaders(builder);
         return builder.get(User.class);
@@ -148,7 +162,7 @@ public class StorjRestClient {
      * @return The user which is now activated.
      */
     public User activateRegisteredUser(String token){
-        String requestUrl = STORJ_API_USERS_ACTIVATE + "/" + token;
+        String requestUrl = storjApiUsersActivate + "/" + token;
         WebResource.Builder builder = jerseyClient.resource(requestUrl).accept(MediaType.APPLICATION_JSON);
         builder = auth.setRequiredAuthHeaders(builder);
         return builder.get(User.class);
@@ -160,7 +174,7 @@ public class StorjRestClient {
      * @return The user which is now deactivated.
      */
     public User deactivateRegisteredUser(String token){
-        String requestUrl = STORJ_API_USERS_DEACTIVATE + "/" + token;
+        String requestUrl = storjApiUsersDeactivate + "/" + token;
         WebResource.Builder builder = jerseyClient.resource(requestUrl).accept(MediaType.APPLICATION_JSON);
         builder = auth.setRequiredAuthHeaders(builder);
         return builder.get(User.class);
@@ -171,7 +185,7 @@ public class StorjRestClient {
      * @return a list of  ECDSA keys associated with the authorized user.
      */
     public List<ECDSAKey> ecdsaKeyGetAll(){
-        WebResource.Builder builder = jerseyClient.resource(STORJ_API_KEYS).accept(MediaType.APPLICATION_JSON);
+        WebResource.Builder builder = jerseyClient.resource(storjApiKeys).accept(MediaType.APPLICATION_JSON);
         return auth.setRequiredAuthHeaders(builder).get(new GenericType<List<ECDSAKey>>(){});
     }
 
@@ -183,7 +197,7 @@ public class StorjRestClient {
     public ECDSAKey ecdsaKeyRegister(String key){
         Map<String,Object> postBody = new HashMap<String,Object>();
         postBody.put("key", key);
-        WebResource.Builder builder = jerseyClient.resource(STORJ_API_KEYS).accept(MediaType.APPLICATION_JSON);
+        WebResource.Builder builder = jerseyClient.resource(storjApiKeys).accept(MediaType.APPLICATION_JSON);
         return auth.setRequiredAuthHeaders(builder).post(ECDSAKey.class, postBody);
     }
 
@@ -192,7 +206,7 @@ public class StorjRestClient {
      * @param publicKey the public key to destroy.
      */
     public void ecdsaKeyDestroy(String publicKey){
-        String requestUrl = STORJ_API_KEYS + "/" + publicKey;
+        String requestUrl = storjApiKeys + "/" + publicKey;
         WebResource.Builder builder = jerseyClient.resource(requestUrl).accept(MediaType.APPLICATION_JSON);
         auth.setRequiredAuthHeaders(builder).delete();
     }
@@ -202,7 +216,7 @@ public class StorjRestClient {
      * @return all of the open file stages for the caller
      */
     public List<Frame> getFrames(){
-        WebResource.Builder builder = jerseyClient.resource(STORJ_API_FRAMES).accept(MediaType.APPLICATION_JSON);
+        WebResource.Builder builder = jerseyClient.resource(storjApiFrames).accept(MediaType.APPLICATION_JSON);
         return auth.setRequiredAuthHeaders(builder).get(new GenericType<List<Frame>>(){});
     }
 
@@ -211,7 +225,7 @@ public class StorjRestClient {
      * @return the created frame.
      */
     public Frame createFrame(){
-        WebResource.Builder builder = jerseyClient.resource(STORJ_API_FRAMES).accept(MediaType.APPLICATION_JSON);
+        WebResource.Builder builder = jerseyClient.resource(storjApiFrames).accept(MediaType.APPLICATION_JSON);
         return auth.setRequiredAuthHeaders(builder).post(Frame.class);
     }
 
@@ -220,7 +234,7 @@ public class StorjRestClient {
      * @param frameId the ID of the frame to destroy.
      */
     public void destroyFrame(String frameId){
-        String requestUrl = STORJ_API_FRAMES + "/" + frameId;
+        String requestUrl = storjApiFrames + "/" + frameId;
         WebResource.Builder builder = jerseyClient.resource(requestUrl).accept(MediaType.APPLICATION_JSON);
         auth.setRequiredAuthHeaders(builder).delete();
     }
@@ -231,7 +245,7 @@ public class StorjRestClient {
      * @return the frame.
      */
     public Frame getFrameById(String frameId){
-        String requestUrl = STORJ_API_FRAMES + "/" + frameId;
+        String requestUrl = storjApiFrames + "/" + frameId;
         WebResource.Builder builder = jerseyClient.resource(requestUrl).accept(MediaType.APPLICATION_JSON);
         builder = auth.setRequiredAuthHeaders(builder);
         return builder.get(Frame.class);
@@ -244,7 +258,7 @@ public class StorjRestClient {
      * @return the Frame with the shard added.
      */
     public AddShardResponse addShardToFrame(String frameId, Shard shard){
-        String requestUrl = STORJ_API_FRAMES + "/" + frameId;
+        String requestUrl = storjApiFrames + "/" + frameId;
         WebResource.Builder builder = jerseyClient.resource(requestUrl).accept(MediaType.APPLICATION_JSON);
         builder.entity(shard, MediaType.APPLICATION_JSON);
         builder = auth.setRequiredAuthHeaders(builder);
@@ -256,7 +270,7 @@ public class StorjRestClient {
      * @return the list of buckets.
      */
     public List<Bucket> getAllBuckets(){
-        WebResource.Builder builder = jerseyClient.resource(STORJ_API_BUCKETS).accept(MediaType.APPLICATION_JSON);
+        WebResource.Builder builder = jerseyClient.resource(storjApiBuckets).accept(MediaType.APPLICATION_JSON);
         return auth.setRequiredAuthHeaders(builder).get(new GenericType<List<Bucket>>(){});
     }
 
@@ -266,8 +280,9 @@ public class StorjRestClient {
      * @return The bucket which has been created.
      */
     public Bucket createBucket(Bucket bucket){
-        WebResource.Builder builder = jerseyClient.resource(STORJ_API_BUCKETS).accept(MediaType.APPLICATION_JSON);
-        return auth.setRequiredAuthHeaders(builder).post(Bucket.class, bucket);
+        WebResource.Builder builder = jerseyClient.resource(storjApiBuckets).accept(MediaType.APPLICATION_JSON);
+        builder.entity(bucket, MediaType.APPLICATION_JSON);
+        return auth.setRequiredAuthHeaders(builder).post(Bucket.class);
     }
 
     /**
@@ -275,7 +290,7 @@ public class StorjRestClient {
      * @param bucketId The id of the bucket to destroy.
      */
     public void destroyBucket(String bucketId){
-        String requestUrl = STORJ_API_BUCKETS + "/" + bucketId;
+        String requestUrl = storjApiBuckets + "/" + bucketId;
         WebResource.Builder builder = jerseyClient.resource(requestUrl).accept(MediaType.APPLICATION_JSON);
         auth.setRequiredAuthHeaders(builder).delete();
     }
@@ -286,7 +301,7 @@ public class StorjRestClient {
      * @return The bucket which has been updated.
      */
     public Bucket updateBucket(Bucket bucket){
-        String requestUrl = STORJ_API_BUCKETS + "/" + bucket.getId();
+        String requestUrl = storjApiBuckets + "/" + bucket.getId();
         WebResource.Builder builder = jerseyClient.resource(requestUrl).accept(MediaType.APPLICATION_JSON);
         builder = auth.setRequiredAuthHeaders(builder);
         builder = builder.entity(bucket);
@@ -300,7 +315,7 @@ public class StorjRestClient {
      * @return The created token.
      */
     public Token getTokenForBucket(String bucketId, Operation operation){
-        String requestURL = STORJ_API_BUCKETS + "/" + operation + "/" + "tokens";
+        String requestURL = storjApiBuckets + "/" + operation + "/" + "tokens";
         WebResource.Builder builder = jerseyClient.resource(requestURL).accept(MediaType.APPLICATION_JSON);
         return auth.setRequiredAuthHeaders(builder).post(Token.class, operation);
     }
@@ -311,7 +326,7 @@ public class StorjRestClient {
      * @return the meta data for the files.
      */
     public List<BucketEntry> getFilesInBucket(String bucketId){
-        String requestURL = STORJ_API_BUCKETS + "/" + bucketId + "/" + "files";
+        String requestURL = storjApiBuckets + "/" + bucketId + "/" + "files";
         WebResource.Builder builder = jerseyClient.resource(requestURL).accept(MediaType.APPLICATION_JSON);
         return auth.setRequiredAuthHeaders(builder).get(new GenericType<List<BucketEntry>>(){});
     }
@@ -323,7 +338,7 @@ public class StorjRestClient {
      * @return a bucket entry.
      */
     public BucketEntry storeFile(String bucketId, BucketEntry bucketEntry){
-        String requestURL = STORJ_API_BUCKETS + "/" + bucketId + "/" + "files";
+        String requestURL = storjApiBuckets + "/" + bucketId + "/" + "files";
         WebResource.Builder builder = jerseyClient.resource(requestURL).accept(MediaType.APPLICATION_JSON);
         builder.entity(bucketEntry, MediaType.APPLICATION_JSON);
         return auth.setRequiredAuthHeaders(builder).post(BucketEntry.class);
@@ -336,7 +351,7 @@ public class StorjRestClient {
      * @param fileId The fileId of the file to destroy.
      */
     public void destroyFileEntry(String bucketId, String fileId){
-        String requestUrl = STORJ_API_BUCKETS + "/" + bucketId + "/files/" + fileId;
+        String requestUrl = storjApiBuckets + "/" + bucketId + "/files/" + fileId;
         WebResource.Builder builder = jerseyClient.resource(requestUrl).accept(MediaType.APPLICATION_JSON);
         auth.setRequiredAuthHeaders(builder).delete();
     }
@@ -349,7 +364,7 @@ public class StorjRestClient {
      * @return A list of filepointers to retrieve the file.
      */
     public List<FilePointer> getFilePointers(String bucketId, String fileId, String xToken){
-        String requestUrl = STORJ_API_BUCKETS + "/" + bucketId + "/files/" + fileId;
+        String requestUrl = storjApiBuckets + "/" + bucketId + "/files/" + fileId;
         WebResource.Builder builder = jerseyClient.resource(requestUrl).accept(MediaType.APPLICATION_JSON);
         builder.header("x-token", xToken);
         return auth.setRequiredAuthHeaders(builder).get(new GenericType<List<FilePointer>>(){});
