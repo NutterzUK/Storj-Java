@@ -1,6 +1,9 @@
 import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
 import com.google.common.primitives.Bytes;
+
+import datatransfer.CodeTestUtils;
+
 import org.bouncycastle.crypto.digests.RIPEMD160Digest;
 import org.bouncycastle.util.encoders.Hex;
 import org.glassfish.tyrus.client.ClientManager;
@@ -24,11 +27,15 @@ public class MainTest {
 
     final static int DEFAULT_SHARD_SIZE_BYTES = 1024*1024*8;
 
+    private static final String STEVE_FILE = "C:\\Users\\steve\\Desktop\\storj-java-bridge-client.zip";
+    private static final String LEW_FILE = "/home/lewis/testDoc";
+    
+    private static final String STORJ_ROOT = "https://api.storj.io";
     public static void main(String[] args){
-        File inputFile = new File("C:\\Users\\steve\\Desktop\\storj-java-bridge-client.zip");
+        File inputFile = new File(LEW_FILE);
 
         String encryptionPassword = "MZygpewJsCpRrfOr";
-        StorjRestClient client = new StorjRestClient("http://localhost:6382", "steveswfc@gmail.com", "testpassword");
+        StorjRestClient client = new StorjRestClient(CodeTestUtils.getStorjBasePath(), CodeTestUtils.getStorjUsername(), CodeTestUtils.getStorjPassword());
 
         try {
             // Create encrypted file.
@@ -52,14 +59,14 @@ public class MainTest {
 
                 String address = "ws://" + response.getFarmer().getAddress() + ":" + response.getFarmer().getPort();
 
-                CountDownLatch latch;
-                latch = new CountDownLatch(1);
+                //CountDownLatch latch;
+                //latch = new CountDownLatch(1);
 
                 ClientManager wsClient = ClientManager.createClient();
 
                 try {
                     wsClient.connectToServer(new StorjWebsocketClient(shard, response), null, new URI(address));
-                    latch.await();
+                    //latch.await();
                 } catch (Exception  e) {
                     throw new RuntimeException(e);
                 }
