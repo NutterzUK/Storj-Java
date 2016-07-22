@@ -1,57 +1,72 @@
 package storj.io.restclient.model;
 
+import java.util.Calendar;
 import java.util.List;
 
 /**
- * Represents a file staging frame.
- * Created by Stephen Nutbrown on 06/07/2016.
+ * Represents a file staging frame. Created by Stephen Nutbrown on 06/07/2016.
  */
 public class Frame {
 
-    String user;
-    String created;
-    String id;
-    List<Shard> shards;
+	private String id;
+	private String user;
+	private List<Shard> shards;
+	private Long size;
+	private boolean locked;
+	private Calendar created;
 
+	public String getUser() {
+		return user;
+	}
 
-    public String getUser() {
-        return user;
-    }
+	public void setUser(String user) {
+		this.user = user;
+	}
 
-    public void setUser(String user) {
-        this.user = user;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public String getCreated() {
-        return created;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public void setCreated(String created) {
-        this.created = created;
-    }
+	public List<Shard> getShards() {
+		return shards;
+	}
 
-    public String getId() {
-        return id;
-    }
+	public void setShards(List<Shard> shards) {
+		this.shards = shards;
+	}
 
-    public void setId(String id) {
-        this.id = id;
-    }
+	public Long getSize() {
+		return size;
+	}
 
-    public List<Shard> getShards() {
-        return shards;
-    }
+	public void setSize(Long size) {
+		this.size = size;
+	}
 
-    public void setShards(List<Shard> shards) {
-        this.shards = shards;
-    }
+	public boolean isLocked() {
+		return locked;
+	}
 
-    @Override
-    public String toString() {
-        return "Frame{" +
-                "created='" + created + '\'' +
-                ", id='" + id + '\'' +
-                ", shards=" + shards +
-                '}';
-    }
+	public void setLocked(boolean locked) {
+		this.locked = locked;
+	}
+
+	public Calendar getCreated() {
+		return created;
+	}
+
+	public void setCreated(Calendar created) {
+		this.created = created;
+	}
+
+	@Override
+	public String toString() {
+		return "Frame [user=" + user + ", id=" + id + ", shards=" + shards + ", size=" + size + ", locked=" + locked
+				+ ", created=" + created + "]";
+	}
+
 }
