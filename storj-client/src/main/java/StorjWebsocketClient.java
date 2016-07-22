@@ -28,10 +28,12 @@ public class StorjWebsocketClient{
     private Shard shard;
     private AddShardResponse destination;
     private AuthorizationModel authModel;
+    private CountDownLatch latch;
 
-    public StorjWebsocketClient(Shard shard, AddShardResponse destination){
+    public StorjWebsocketClient(Shard shard, AddShardResponse destination, CountDownLatch latch){
         this.shard = shard;
         this.destination = destination;
+        this.latch = latch;
 
         authModel = new AuthorizationModel();
         authModel.setToken(destination.getToken());
@@ -48,19 +50,15 @@ public class StorjWebsocketClient{
 
     @OnOpen
     public void onOpen(Session session, EndpointConfig endpointConfig) {
-        logger.info("Connected ... " + session.getId());
         File shardFile = new File(shard.getPath());
         try {
-
             // send auth as text.
-            logger.info("Sending: " + gson.toJson(authModel));
             session.getBasicRemote().sendText(gson.toJson(authModel), true);
 
             // send shard data as binary - note this will need changing to read in small amounts to save memory.. when it's working.
             ByteBuffer fileBuffer = ByteBuffer.allocate((int)shardFile.length());
             fileBuffer.put(Files.readAllBytes(shardFile.toPath()));
             session.getBasicRemote().sendBinary(fileBuffer, true);
-            logger.info("Sent");
 
          //   Files.copy(Paths.get(shard.getPath()), session.getBasicRemote().getSendStream());
 
@@ -71,6 +69,6 @@ public class StorjWebsocketClient{
 
     @OnClose
     public void onClose(Session session, CloseReason closeReason) {
-        logger.info(String.format("Session %s close because of %s", session.getId(), closeReason));
+        latch.countDown();
     }
 }

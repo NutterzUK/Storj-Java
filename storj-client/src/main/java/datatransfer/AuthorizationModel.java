@@ -3,12 +3,12 @@ package datatransfer;
 import storj.io.restclient.model.Operation;
 
 /**
- * Created by steve on 12/07/2016.
+ * Created by Stephen Nutbrown on 12/07/2016.
  */
 public class AuthorizationModel {
 
     String token;
-    String Hash;
+    String hash;
     Operation operation;
 
     public String getToken() {
@@ -20,11 +20,11 @@ public class AuthorizationModel {
     }
 
     public String getHash() {
-        return Hash;
+        return hash;
     }
 
     public void setHash(String hash) {
-        Hash = hash;
+        this.hash = hash;
     }
 
     public Operation getOperation() {

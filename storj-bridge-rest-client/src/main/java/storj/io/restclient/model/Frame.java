@@ -12,7 +12,24 @@ public class Frame {
     String created;
     String id;
     List<Shard> shards;
+    int size;
+    boolean locked;
 
+    public boolean isLocked() {
+        return locked;
+    }
+
+    public void setLocked(boolean locked) {
+        this.locked = locked;
+    }
+
+    public int getSize() {
+        return size;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
+    }
 
     public String getUser() {
         return user;

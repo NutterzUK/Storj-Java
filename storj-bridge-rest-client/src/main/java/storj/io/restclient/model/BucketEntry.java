@@ -10,6 +10,15 @@ public class BucketEntry {
     String mimetype;
     String filename;
     long size;
+    String frame;
+
+    public String getFrame() {
+        return frame;
+    }
+
+    public void setFrame(String frame) {
+        this.frame = frame;
+    }
 
     public String getHash() {
         return hash;

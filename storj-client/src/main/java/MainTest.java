@@ -22,13 +22,21 @@ import java.util.concurrent.CountDownLatch;
  */
 public class MainTest {
 
+    final static String STORJ_API_LOCAL = "http://localhost:6382";
     final static int DEFAULT_SHARD_SIZE_BYTES = 1024*1024*8;
 
     public static void main(String[] args){
-        File inputFile = new File("C:\\Users\\steve\\Desktop\\storj-java-bridge-client.zip");
-
-        String encryptionPassword = "MZygpewJsCpRrfOr";
+       // createUser();
         StorjRestClient client = new StorjRestClient("http://localhost:6382", "steveswfc@gmail.com", "testpassword");
+
+      //  createBucket(client, "TestBucket");
+        attemptUpload(client);
+
+    }
+
+    private static void attemptUpload(StorjRestClient client){
+        File inputFile = new File("C:\\Users\\steve\\Desktop\\cat.jpg");
+        String encryptionPassword = "MZygpewJsCpRrfOr";
 
         try {
             // Create encrypted file.
@@ -58,7 +66,7 @@ public class MainTest {
                 ClientManager wsClient = ClientManager.createClient();
 
                 try {
-                    wsClient.connectToServer(new StorjWebsocketClient(shard, response), null, new URI(address));
+                    wsClient.connectToServer(new StorjWebsocketClient(shard, response, latch), null, new URI(address));
                     latch.await();
                 } catch (Exception  e) {
                     throw new RuntimeException(e);
@@ -67,17 +75,35 @@ public class MainTest {
             }
 
             // push the data.
-
+            BucketEntry bucketEntry = new BucketEntry();
+            bucketEntry.setMimetype("image/jpeg");
+            bucketEntry.setFilename("cat.jpg");
+            bucketEntry.setFrame(frame.getId());
+            client.storeFile(bucketId, bucketEntry);
 
             // Remake it
             //Utils.pieceTogetherFile(shards, new File("C:\\Users\\steve\\Desktop\\encrypted.zip"));
 
             // Unencrypt it
-           // Utils.decryptFile(new File("C:\\Users\\steve\\Desktop\\encrypted.zip"), new File("C:\\Users\\steve\\Desktop\\unencrypted.zip"), encryptionPassword);
+            // Utils.decryptFile(new File("C:\\Users\\steve\\Desktop\\encrypted.zip"), new File("C:\\Users\\steve\\Desktop\\unencrypted.zip"), encryptionPassword);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
+    }
+
+    private static void createBucket(StorjRestClient client, String bucketName){
+        Bucket bucket = new Bucket();
+        bucket.setName(bucketName);
+        client.createBucket(bucket);
+    }
+
+    private static void createUser(){
+        StorjRestClient client = new StorjRestClient(STORJ_API_LOCAL);
+        User user = new User();
+        user.setEmail("steveswfc@gmail.com");
+        user.setPassword("testpassword");
+        client.createUser(user);
     }
 }
