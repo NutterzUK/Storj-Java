@@ -15,7 +15,6 @@ import storj.io.restclient.auth.NoAuthType;
 
 import javax.ws.rs.core.MediaType;
 
-import java.awt.Frame;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
