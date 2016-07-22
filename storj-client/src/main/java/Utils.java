@@ -18,7 +18,7 @@ import java.util.Random;
 import static java.nio.file.Files.readAllBytes;
 
 /**
- * Created by steve on 09/07/2016.
+ * Created by Stephen Nutbrown on 09/07/2016.
  */
 public class Utils {
 
@@ -109,6 +109,7 @@ public class Utils {
     public static byte[] getRipemdSha256File(File file) throws Exception{
         // Get sha256 for the file.
         byte[] sha256sBytes = com.google.common.io.Files.hash(file, Hashing.sha256()).asBytes();
+        sha256sBytes = Hex.encode(sha256sBytes);
 
         // Get RIPEMD160 for that.
         RIPEMD160Digest digest = new RIPEMD160Digest();

@@ -126,8 +126,7 @@ public class StorjRestClient {
 	 * @return The user.
 	 */
 	public User createUser(User user) {
-		String requestUrl = storjApiUsers;
-		return getBuilder(requestUrl, user).post(User.class);
+		return getBuilder(storjApiUsers, user).post(User.class);
 	}
 
 	/**
