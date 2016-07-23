@@ -19,7 +19,7 @@ public interface StorjClient {
 
     File downloadFile(String bucketId, String bucketEntryId);
 
-    List<Bucket> listBuckets();
+    List<Bucket> getBuckets();
 
     Bucket getBucket(String bucketId);
 

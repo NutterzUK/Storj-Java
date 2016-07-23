@@ -26,26 +26,39 @@ import java.util.concurrent.CountDownLatch;
 public class MainTest {
 
     public static void main(String[] args){
-        uploadFile();
+        uploadFile(new File("C:\\Users\\steve\\Desktop\\cat.jpg"));
     }
 
 
-    private static void uploadFile(){
+    private static void uploadFile(File file){
         StorjConfiguration configuration = new StorjConfiguration(CodeTestUtils.getEncryptionKey(), CodeTestUtils.getStorjUsername(), CodeTestUtils.getStorjPassword());
+        configuration.setApiRoot(CodeTestUtils.getStorjBasePath());
         StorjClient storj = new Storj(configuration);
 
         try {
-            // upload a file to the first bucket.
-            storj.uploadFile(new File("C:\\Users\\steve\\Desktop\\cat1.jpg"), storj.listBuckets().get(0));
+            // upload a file to the first bucket we have.
+            storj.uploadFile(file, findFirstBucket(storj));
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private static void createBucket(StorjRestClient client, String bucketName){
+
+    private static Bucket findFirstBucket(StorjClient client){
+        Bucket bucket;
+        List<Bucket> buckets = client.getBuckets();
+        if(buckets.isEmpty()){
+            bucket = createBucket(client, "TestBucket");
+        }else{
+            bucket = buckets.get(0);
+        }
+        return bucket;
+    }
+
+    private static Bucket createBucket(StorjClient client, String bucketName){
         Bucket bucket = new Bucket();
         bucket.setName(bucketName);
-        client.createBucket(bucket);
+        return client.createBucket(bucketName);
     }
 
     private static void createUser(){

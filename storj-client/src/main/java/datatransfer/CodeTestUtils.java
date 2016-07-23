@@ -16,7 +16,7 @@ public final class CodeTestUtils {
     private static final String DEFAULT_PASSWORD = "testpassword";
 
     private static final String BASEPATH_PROPERTY = "storj_basepath";
-    private static final String DEFAULT_BASEPATH = "http://localhost:6382";
+    private static final String DEFAULT_BASEPATH = "https://api.storj.io";
 
     private static final String ENCRYPTIONKEY_PROPERTY = "storj_encryoptionkey";
     private static final String DEFAULT_ENCRYPTIONKEY = "DefaultKey";

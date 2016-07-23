@@ -114,6 +114,9 @@ public class StorjConfiguration {
     }
 
     public void setTempDirectoryForShards(File tempDirectoryForShards) {
+        if(tempDirectoryForShards == null || !tempDirectoryForShards.isDirectory() || !tempDirectoryForShards.canWrite()){
+            throw new RuntimeException("Temp directory must be readable, writable and a directory not a file.");
+        }
         this.tempDirectoryForShards = tempDirectoryForShards;
     }
 }

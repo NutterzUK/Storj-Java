@@ -94,8 +94,12 @@ public class Storj implements StorjClient {
         throw new NotImplementedException();
     }
 
-    public List<Bucket> listBuckets() {
-        throw new NotImplementedException();
+    /**
+     * Get all buckets.
+     * @return all buckets for the user.
+     */
+    public List<Bucket> getBuckets() {
+        return storjRestClient.getAllBuckets();
     }
 
     /**
