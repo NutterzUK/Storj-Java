@@ -8,6 +8,9 @@ import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.api.client.filter.LoggingFilter;
 import com.sun.jersey.api.json.JSONConfiguration;
 import com.sun.jersey.client.urlconnection.URLConnectionClientHandler;
+import org.codehaus.jackson.jaxrs.JacksonJaxbJsonProvider;
+import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
+import org.codehaus.jackson.map.DeserializationConfig;
 import storj.io.restclient.model.*;
 import storj.io.restclient.auth.AuthType;
 import storj.io.restclient.auth.BasicAuthType;
@@ -57,25 +60,12 @@ public class StorjRestClient {
 	private AuthType auth;
 
 	/**
-	 * Create a storj restclient with no authentication mechanism.
+	 * Create a storj restclient.
 	 */
-	public StorjRestClient(String apiRoot) {
+	public StorjRestClient(String apiRoot, AuthType authType) {
 		setApiRoot(apiRoot);
-		this.auth = new NoAuthType();
+		this.auth = authType;
 		configureJersey();
-	}
-
-	/**
-	 * Creates a storj restclient with BASIC authentication (Recommended to use
-	 * ECDSA instead!)
-	 * 
-	 * @param userEmail
-	 * @param password
-	 */
-	public StorjRestClient(String apiRoot, String userEmail, String password) {
-		setApiRoot(apiRoot);
-		configureJersey();
-		auth = new BasicAuthType(userEmail, password);
 	}
 
 	private void setApiRoot(String apiRoot) {
@@ -301,15 +291,25 @@ public class StorjRestClient {
 	}
 
 	/**
-	 * Destroy the bucket on the server.
+	 * Delete the bucket on the server.
 	 * 
 	 * @param bucketId
 	 *            The id of the bucket to destroy.
 	 */
-	public void destroyBucket(String bucketId) {
+	public void deleteBucket(String bucketId) {
 		String requestUrl = storjApiBuckets + "/" + bucketId;
 		getBuilder(requestUrl).delete();
 	}
+
+    /**
+     * Retrieves a bucket by ID.
+     * @param bucketId the ID of the bucket.
+     * @return The bucket.
+     */
+	public Bucket getBucketById(String bucketId){
+	    String requestUrl = storjApiBuckets + "/" + bucketId;
+        return getBuilder(storjApiBuckets).get(Bucket.class);
+    }
 
 	/**
 	 * Update a bucket via a patch request.
@@ -400,10 +400,9 @@ public class StorjRestClient {
 	 * Configure Jersey to use Jackson for unmarshalling and marshalling JSON.
 	 */
 	private void configureJersey() {
-		jerseyClient = Client.create();
+
 		ClientConfig cc = new DefaultClientConfig();
 		cc.getFeatures().put(JSONConfiguration.FEATURE_POJO_MAPPING, Boolean.TRUE);
-
 		// Required for PATCH.
 		cc.getProperties().put(URLConnectionClientHandler.PROPERTY_HTTP_URL_CONNECTION_SET_METHOD_WORKAROUND, true);
 		jerseyClient = Client.create(cc);

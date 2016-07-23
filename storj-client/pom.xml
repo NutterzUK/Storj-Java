@@ -73,6 +73,21 @@
             <version>1.1</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.0</version>
+        </dependency>
+
+        <!-- for guessing mime types -->
+        <!-- https://mvnrepository.com/artifact/com.j256.simplemagic/simplemagic -->
+        <dependency>
+            <groupId>com.j256.simplemagic</groupId>
+            <artifactId>simplemagic</artifactId>
+            <version>1.1</version>
+        </dependency>
+
+
     </dependencies>
 
 </project>

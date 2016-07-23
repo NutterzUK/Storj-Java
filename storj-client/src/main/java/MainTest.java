@@ -25,75 +25,21 @@ import java.util.concurrent.CountDownLatch;
  */
 public class MainTest {
 
-    final static String STORJ_API_LOCAL = "http://localhost:6382";
-    final static int DEFAULT_SHARD_SIZE_BYTES = 1024*1024*8;
-
     public static void main(String[] args){
-       // createUser();
-        StorjRestClient client = new StorjRestClient(CodeTestUtils.getStorjBasePath(), CodeTestUtils.getStorjUsername(), CodeTestUtils.getStorjPassword());
-
-      //  createBucket(client, "TestBucket");
-        attemptUpload(client);
-
+        uploadFile();
     }
 
-    private static void attemptUpload(StorjRestClient client){
-        File inputFile = new File("C:\\Users\\steve\\Desktop\\cat.jpg");
-        String encryptionPassword = "MZygpewJsCpRrfOr";
+
+    private static void uploadFile(){
+        StorjConfiguration configuration = new StorjConfiguration(CodeTestUtils.getEncryptionKey(), CodeTestUtils.getStorjUsername(), CodeTestUtils.getStorjPassword());
+        StorjClient storj = new Storj(configuration);
 
         try {
-            // Create encrypted file.
-            File encryptedFile = File.createTempFile("storj",".storj");
-            Utils.encryptFile(inputFile, encryptedFile, encryptionPassword);
-
-            // Shard it.
-
-            List<Shard> shards = Utils.shardFile(inputFile, DEFAULT_SHARD_SIZE_BYTES);
-
-            // Set new hash.
-
-            // put it on the network.
-            String bucketId = client.getAllBuckets().get(0).getId();
-
-            List<AddShardResponse> addShardResponses = new ArrayList<AddShardResponse>();
-            Frame frame = client.createFrame();
-            for(Shard shard : shards){
-
-                AddShardResponse response = client.addShardToFrame(frame.getId(), shard);
-
-                String address = "ws://" + response.getFarmer().getAddress() + ":" + response.getFarmer().getPort();
-
-                CountDownLatch latch;
-                latch = new CountDownLatch(1);
-
-                ClientManager wsClient = ClientManager.createClient();
-
-                try {
-                    wsClient.connectToServer(new StorjWebsocketClient(shard, response, latch), null, new URI(address));
-                    latch.await();
-                } catch (Exception  e) {
-                    throw new RuntimeException(e);
-                }
-
-            }
-
-            // push the data.
-            BucketEntry bucketEntry = new BucketEntry();
-            bucketEntry.setMimetype("image/jpeg");
-            bucketEntry.setFilename("cat.jpg");
-            bucketEntry.setFrame(frame.getId());
-            client.storeFile(bucketId, bucketEntry);
-
-            // Remake it
-            //Utils.pieceTogetherFile(shards, new File("C:\\Users\\steve\\Desktop\\encrypted.zip"));
-
-            // Unencrypt it
-            // Utils.decryptFile(new File("C:\\Users\\steve\\Desktop\\encrypted.zip"), new File("C:\\Users\\steve\\Desktop\\unencrypted.zip"), encryptionPassword);
-
+            // upload a file to the first bucket.
+            storj.uploadFile(new File("C:\\Users\\steve\\Desktop\\cat1.jpg"), storj.listBuckets().get(0));
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     private static void createBucket(StorjRestClient client, String bucketName){
@@ -103,10 +49,10 @@ public class MainTest {
     }
 
     private static void createUser(){
-        StorjRestClient client = new StorjRestClient(STORJ_API_LOCAL);
+        StorjClient storj = new Storj(new StorjConfiguration(CodeTestUtils.getEncryptionKey()));
         User user = new User();
-        user.setEmail("steveswfc@gmail.com");
-        user.setPassword("testpassword");
-        client.createUser(user);
+        user.setEmail(CodeTestUtils.getStorjUsername());
+        user.setPassword(CodeTestUtils.getStorjPassword());
+        storj.createUser();
     }
 }

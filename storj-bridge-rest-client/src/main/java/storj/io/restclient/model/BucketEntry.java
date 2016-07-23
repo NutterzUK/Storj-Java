@@ -1,16 +1,46 @@
 package storj.io.restclient.model;
 
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+
 /**
  * Created by Stephen Nutbrown on 07/07/2016.
  */
+@JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)
 public class BucketEntry {
 
+    String id;
     String hash;
     String bucket;
     String mimetype;
     String filename;
     long size;
     String frame;
+    String name;
+    String renewal;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getRenewal() {
+        return renewal;
+    }
+
+    public void setRenewal(String renewal) {
+        this.renewal = renewal;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public String getFrame() {
         return frame;
