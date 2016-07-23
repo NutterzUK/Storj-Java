@@ -1,6 +1,9 @@
 import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
 import com.google.common.primitives.Bytes;
+
+import datatransfer.CodeTestUtils;
+
 import org.bouncycastle.crypto.digests.RIPEMD160Digest;
 import org.bouncycastle.util.encoders.Hex;
 import org.glassfish.tyrus.client.ClientManager;
@@ -27,7 +30,7 @@ public class MainTest {
 
     public static void main(String[] args){
        // createUser();
-        StorjRestClient client = new StorjRestClient("http://localhost:6382", "steveswfc@gmail.com", "testpassword");
+        StorjRestClient client = new StorjRestClient(CodeTestUtils.getStorjBasePath(), CodeTestUtils.getStorjUsername(), CodeTestUtils.getStorjPassword());
 
       //  createBucket(client, "TestBucket");
         attemptUpload(client);
