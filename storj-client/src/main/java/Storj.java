@@ -86,12 +86,27 @@ public class Storj implements StorjClient {
         return uploadFile(file, bucket.getId());
     }
 
+    /**
+     * Download a file into the temp directory specified in the StorjConfiguration.
+     * This call takes care of retrieving the file shards and piecing the file back together.
+     * @param bucketEntry the Bucket entry to retrieve.
+     * @return A file pointer to the retrieved file.
+     */
     public File downloadFile(BucketEntry bucketEntry) {
-        throw new NotImplementedException();
+        return downloadFile(bucketEntry.getBucket(), bucketEntry.getId());
     }
 
+    /**
+     * Download a file into the temp directory specified in the StorjConfiguration.
+     * This call takes care of retrieving the file shards and piecing the file back together.
+     * @param bucketId the ID of the bucket.
+     * @param bucketEntryId the ID of the bucketEntry
+     * @return A file pointer to the retrieved file.
+     */
     public File downloadFile(String bucketId, String bucketEntryId) {
-        throw new NotImplementedException();
+        Token token = storjRestClient.getTokenForBucket(bucketId, Operation.PULL);
+        List<FilePointer> pointers = storjRestClient.getFilePointers(bucketId, bucketEntryId, token.getToken());
+        return null;
     }
 
     /**

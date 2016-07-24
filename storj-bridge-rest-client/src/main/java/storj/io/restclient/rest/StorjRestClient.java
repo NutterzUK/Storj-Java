@@ -333,8 +333,10 @@ public class StorjRestClient {
 	 * @return The created token.
 	 */
 	public Token getTokenForBucket(String bucketId, Operation operation) {
-		String requestUrl = storjApiBuckets + "/" + operation + "/" + "tokens";
-		return getBuilder(requestUrl).post(Token.class, operation);
+		String requestUrl = storjApiBuckets + "/" + bucketId + "/" + "tokens";
+        Map<String, Object> postBody = new HashMap<String, Object>();
+        postBody.put("operation", operation.toString());
+        return getBuilder(requestUrl, postBody).post(Token.class);
 	}
 
 	/**
@@ -390,9 +392,18 @@ public class StorjRestClient {
 	 */
 	public List<FilePointer> getFilePointers(String bucketId, String fileId, String xToken) {
 		String requestUrl = storjApiBuckets + "/" + bucketId + "/files/" + fileId;
+
+        // Add URL params.
+        Map<String, String> urlParams = new HashMap<String, String>();
+        urlParams.put("skip", "0");
+        urlParams.put("limit", "10");
+        requestUrl += MapQueryEncoderUtils.urlEncodeUTF8(urlParams);
+
+        // Headers.
 		WebResource.Builder builder = getBuilder(requestUrl);
 		builder.header("x-token", xToken);
-		return builder.get(new GenericType<List<FilePointer>>() {
+
+        return builder.get(new GenericType<List<FilePointer>>() {
 		});
 	}
 
@@ -442,8 +453,7 @@ public class StorjRestClient {
 	private WebResource.Builder getBuilder(String requestUrl, Object entity) {
 
 		WebResource.Builder builder = getBuilder(requestUrl);
-
-		builder.type(OUTGOING_MEDIA_TYPE);
+        builder.type(OUTGOING_MEDIA_TYPE);
 		builder.entity(entity);
 
 		return builder;
