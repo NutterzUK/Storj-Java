@@ -63,11 +63,11 @@ public class StorjRestClientTest {
         server.start();
 
         // Create clients to test.
-        String apiRootForClient = "http://localhost:" + PORT;
+        String apiRootForClient = "http://172.17.200.10:" + PORT;
         //String apiRootForClient = "https://api.storj.io";
 
         noAuthClient = new StorjRestClient(apiRootForClient, new NoAuthType());
-        basicAuthClient = new StorjRestClient(apiRootForClient, new BasicAuthType("user", "pass"));
+        basicAuthClient = new StorjRestClient(apiRootForClient, new BasicAuthType("user@gmail.com", "pass"));
     }
 
 
@@ -101,6 +101,12 @@ public class StorjRestClientTest {
         assertEquals(email, responseUser.getEmail());
         assertFalse(responseUser.isActivated());
         assertEquals(email, responseUser.getEmail());
+    }
+
+    @Test
+    public void testTest(){
+        basicAuthClient.getFrameById("5794c70288fc0f4839e61953");
+
     }
 
 }

@@ -26,7 +26,8 @@ import java.util.concurrent.CountDownLatch;
 public class MainTest {
 
     public static void main(String[] args){
-        createUser();
+        //createUser();
+
         StorjConfiguration configuration = new StorjConfiguration(CodeTestUtils.getEncryptionKey(), CodeTestUtils.getStorjUsername(), CodeTestUtils.getStorjPassword());
         configuration.setApiRoot(CodeTestUtils.getStorjBasePath());
         StorjClient storj = new Storj(configuration);
@@ -98,10 +99,11 @@ public class MainTest {
      * Creates a user. Note that the user will need the email address verifying.
      */
     private static void createUser(){
-        StorjClient storj = new Storj(new StorjConfiguration(CodeTestUtils.getEncryptionKey()));
-        User user = new User();
-        user.setEmail(CodeTestUtils.getStorjUsername());
-        user.setPassword(CodeTestUtils.getStorjPassword());
-        storj.createUser();
+
+        StorjConfiguration config = new StorjConfiguration(CodeTestUtils.getEncryptionKey());
+        config.setApiRoot(CodeTestUtils.getStorjBasePath());
+        StorjClient storj = new Storj(config);
+
+        storj.createUser(CodeTestUtils.getStorjUsername(), CodeTestUtils.getStorjPassword());
     }
 }

@@ -33,5 +33,5 @@ public interface StorjClient {
 
     void resetPassword(User user);
 
-    void createUser();
+    User createUser(String email, String password);
 }

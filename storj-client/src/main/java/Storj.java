@@ -42,7 +42,7 @@ public class Storj implements StorjClient {
         Utils.encryptFile(inputFile, encryptedFile, encryptionPassword);
 
         // Shard the file.
-        List<Shard> shards = Utils.shardFile(inputFile, config.getShardSizeInBytes());
+        List<Shard> shards = Utils.shardFile(encryptedFile, config.getShardSizeInBytes());
 
         // create a frame.
         Frame frame = storjRestClient.createFrame();
@@ -169,7 +169,10 @@ public class Storj implements StorjClient {
         resetPassword(user.getEmail());
     }
 
-    public void createUser() {
-        throw new NotImplementedException();
+    public User createUser(String email, String password) {
+        User user = new User();
+        user.setEmail(email);
+        user.setPassword(password);
+        return storjRestClient.createUser(user);
     }
 }

@@ -54,7 +54,7 @@ public class StorjWebsocketClient{
         try {
             // send auth as text.
             session.getBasicRemote().sendText(gson.toJson(authModel), true);
-
+            logger.info(gson.toJson(authModel));
             // send shard data as binary - note this will need changing to read in small amounts to save memory.. when it's working.
             ByteBuffer fileBuffer = ByteBuffer.allocate((int)shardFile.length());
             fileBuffer.put(Files.readAllBytes(shardFile.toPath()));
