@@ -63,8 +63,8 @@ public class StorjRestClientTest {
         server.start();
 
         // Create clients to test.
-        String apiRootForClient = "http://172.17.200.10:" + PORT;
-        //String apiRootForClient = "https://api.storj.io";
+        //String apiRootForClient = "http://172.17.200.10:" + PORT;
+        String apiRootForClient = "https://api.storj.io";
 
         noAuthClient = new StorjRestClient(apiRootForClient, new NoAuthType());
         basicAuthClient = new StorjRestClient(apiRootForClient, new BasicAuthType("user@gmail.com", "pass"));
