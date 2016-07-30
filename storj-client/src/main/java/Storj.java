@@ -27,10 +27,21 @@ public class Storj implements StorjClient {
         this.config = configuration;
     }
 
+    /**
+     * Return the configuration of this Storj client.
+     * @return the storj client configuration.
+     */
     public StorjConfiguration getConguration() {
         return config;
     }
 
+    /**
+     * Upload a file
+     * @param inputFile the file to upload.
+     * @param bucketId the ID of the bucket to upload to.
+     * @return A bucket entry representing the file on the bridge.
+     * @throws Exception Problem uploading file.
+     */
     public BucketEntry uploadFile(File inputFile, String bucketId) throws Exception {
         String encryptionPassword = config.getEncryptionKey();
         // Create encrypted file.
@@ -59,15 +70,15 @@ public class Storj implements StorjClient {
                 latch.await();
             } catch (Exception e) {
                 throw new RuntimeException(e);
+            } finally {
+                // clean up shard files..
+                File shardFile = new File(shard.getPath());
+                shardFile.delete();
             }
-
-            // clean up encrypted file
-            encryptedFile.delete();
-
-            // clean up shard files..
-            File shardFile = new File(shard.getPath());
-            shardFile.delete();
         }
+
+        // clean up encrypted file
+        encryptedFile.delete();
 
         // Create the bucket entry.
         BucketEntry bucketEntry = new BucketEntry();
@@ -82,6 +93,13 @@ public class Storj implements StorjClient {
 
     }
 
+    /**
+     * Upload a file to the storj network.
+     * @param file the file to upload.
+     * @param bucket the bucket to upload to.
+     * @return a bucket entry representing the file stored on the bridge.
+     * @throws Exception problem uploading file.
+     */
     public BucketEntry uploadFile(File file, Bucket bucket) throws Exception {
         return uploadFile(file, bucket.getId());
     }
@@ -106,7 +124,7 @@ public class Storj implements StorjClient {
     public File downloadFile(String bucketId, String bucketEntryId) {
         Token token = storjRestClient.getTokenForBucket(bucketId, Operation.PULL);
         List<FilePointer> pointers = storjRestClient.getFilePointers(bucketId, bucketEntryId, token.getToken());
-        return null;
+        throw new NotImplementedException();
     }
 
     /**
@@ -169,7 +187,16 @@ public class Storj implements StorjClient {
         resetPassword(user.getEmail());
     }
 
-    public void createUser() {
-        throw new NotImplementedException();
+    /**
+     * Create a user. Warning: The users account will need verifying before using.
+     * @param email the email address of the user.
+     * @param password the password of the user.
+     * @return An object from the bridge representing a user.
+     */
+    public User createUser(String email, String password) {
+        User user = new User();
+        user.setEmail(email);
+        user.setPassword(password);
+        return storjRestClient.createUser(user);
     }
 }

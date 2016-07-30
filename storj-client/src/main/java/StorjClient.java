@@ -3,11 +3,10 @@ import storj.io.restclient.model.BucketEntry;
 import storj.io.restclient.model.User;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 /**
- * Created by steve on 23/07/2016.
+ * Created by Stephen Nutbrown on 23/07/2016.
  */
 public interface StorjClient {
 
@@ -33,5 +32,5 @@ public interface StorjClient {
 
     void resetPassword(User user);
 
-    void createUser();
+    User createUser(String email, String password);
 }

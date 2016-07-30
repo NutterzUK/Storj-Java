@@ -13,9 +13,12 @@ import org.junit.Before;
 import org.junit.Test;
 import storj.io.restclient.auth.BasicAuthType;
 import storj.io.restclient.auth.NoAuthType;
+import storj.io.restclient.model.Bucket;
 import storj.io.restclient.model.User;
 
 import javax.ws.rs.core.MediaType;
+
+import java.util.List;
 
 import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -25,13 +28,13 @@ import static org.junit.Assert.assertFalse;
  */
 public class StorjRestClientTest {
 
+
     private MockHttpServer server;
     private SimpleHttpResponseProvider responseProvider;
     private StorjRestClient noAuthClient;
     private StorjRestClient basicAuthClient;
 
     // Storj API root.
-
     private static final int PORT = 51234;
 
     // Contact end points
@@ -70,14 +73,140 @@ public class StorjRestClientTest {
         basicAuthClient = new StorjRestClient(apiRootForClient, new BasicAuthType("user", "pass"));
     }
 
-
     @After
     public void tearDown() throws Exception {
         server.stop();
     }
 
+
     @Test
-    public void testCreateUser() throws UnsatisfiedExpectationException {
+    public void getContacts() throws Exception {
+
+    }
+
+    @Test
+    public void getContact() throws Exception {
+
+    }
+
+
+    @Test
+    public void deleteUser() throws Exception {
+
+    }
+
+    @Test
+    public void resetPassword() throws Exception {
+
+    }
+
+    @Test
+    public void confirmPasswordReset() throws Exception {
+
+    }
+
+    @Test
+    public void activateRegisteredUser() throws Exception {
+
+    }
+
+    @Test
+    public void deactivateRegisteredUser() throws Exception {
+
+    }
+
+    @Test
+    public void ecdsaKeyGetAll() throws Exception {
+
+    }
+
+    @Test
+    public void ecdsaKeyRegister() throws Exception {
+
+    }
+
+    @Test
+    public void ecdsaKeyDestroy() throws Exception {
+
+    }
+
+    @Test
+    public void getFrames() throws Exception {
+
+    }
+
+    @Test
+    public void createFrame() throws Exception {
+
+    }
+
+    @Test
+    public void destroyFrame() throws Exception {
+
+    }
+
+    @Test
+    public void getFrameById() throws Exception {
+
+    }
+
+    @Test
+    public void addShardToFrame() throws Exception {
+
+    }
+
+    @Test
+    public void getAllBuckets() throws Exception {
+
+    }
+
+    @Test
+    public void createBucket() throws Exception {
+
+    }
+
+    @Test
+    public void deleteBucket() throws Exception {
+
+    }
+
+    @Test
+    public void getBucketById() throws Exception {
+
+    }
+
+    @Test
+    public void updateBucket() throws Exception {
+
+    }
+
+    @Test
+    public void getTokenForBucket() throws Exception {
+
+    }
+
+    @Test
+    public void getFilesInBucket() throws Exception {
+
+    }
+
+    @Test
+    public void storeFile() throws Exception {
+
+    }
+
+    @Test
+    public void destroyFileEntry() throws Exception {
+
+    }
+
+    @Test
+    public void getFilePointers() throws Exception {
+
+    }
+
+    @Test
+    public void createUser() throws UnsatisfiedExpectationException {
         String expectedContentType = MediaType.APPLICATION_JSON;
         String email = "testemail@test.com";
         String password = "testpassword";
@@ -103,4 +232,21 @@ public class StorjRestClientTest {
         assertEquals(email, responseUser.getEmail());
     }
 
+    @Test
+    public void getBuckets() {
+        String mockResponse = "[{\"user\":\"test@test.com\",\"created\":\"2016-07-23T08:43:00.253Z\",\"name\":\"TestBucket\",\"pubkeys\":[],\"status\":\"Active\",\"transfer\":0,\"storage\":0,\"id\":\"1234\"}]";
+        responseProvider.expect(Method.GET, storjApiBuckets).respondWith(200, MediaType.APPLICATION_JSON, mockResponse);
+
+        List<Bucket> response = basicAuthClient.getAllBuckets();
+        assertEquals(1, response.size());
+
+        Bucket bucket = response.get(0);
+        assertEquals("test@test.com", bucket.getUser());
+        assertEquals("2016-07-23T08:43:00.253Z", bucket.getCreated());
+        assertEquals("TestBucket", bucket.getName());
+        assertEquals("Active", bucket.getStatus());
+        assertEquals("1234", bucket.getId());
+        assertEquals(0, bucket.getTransfer());
+        assertEquals(0, bucket.getStorage());
+    }
 }

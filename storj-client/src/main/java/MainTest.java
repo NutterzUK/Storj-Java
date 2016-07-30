@@ -26,7 +26,6 @@ import java.util.concurrent.CountDownLatch;
 public class MainTest {
 
     public static void main(String[] args){
-        createUser();
         StorjConfiguration configuration = new StorjConfiguration(CodeTestUtils.getEncryptionKey(), CodeTestUtils.getStorjUsername(), CodeTestUtils.getStorjPassword());
         configuration.setApiRoot(CodeTestUtils.getStorjBasePath());
         StorjClient storj = new Storj(configuration);
@@ -99,9 +98,6 @@ public class MainTest {
      */
     private static void createUser(){
         StorjClient storj = new Storj(new StorjConfiguration(CodeTestUtils.getEncryptionKey()));
-        User user = new User();
-        user.setEmail(CodeTestUtils.getStorjUsername());
-        user.setPassword(CodeTestUtils.getStorjPassword());
-        storj.createUser();
+        storj.createUser(CodeTestUtils.getStorjUsername(), (CodeTestUtils.getStorjPassword()));
     }
 }
