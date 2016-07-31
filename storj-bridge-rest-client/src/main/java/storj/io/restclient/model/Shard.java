@@ -10,8 +10,11 @@ import java.util.List;
  */
 public class Shard {
 
+    @JsonIgnore
     String _id;
+
     int index;
+
     String hash;
     long size;
     List<String> tree = new ArrayList<String>();

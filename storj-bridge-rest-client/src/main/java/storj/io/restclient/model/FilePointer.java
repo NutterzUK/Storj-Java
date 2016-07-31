@@ -8,6 +8,24 @@ public class FilePointer {
     String token;
     Operation operation;
     String channel;
+    Contact farmer;
+    long size;
+
+    public Contact getFarmer() {
+        return farmer;
+    }
+
+    public void setFarmer(Contact farmer) {
+        this.farmer = farmer;
+    }
+
+    public long getSize() {
+        return size;
+    }
+
+    public void setSize(long size) {
+        this.size = size;
+    }
 
     public String getHash() {
         return hash;

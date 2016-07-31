@@ -11,7 +11,7 @@ public class Frame {
     String user;
     String created;
     String id;
-    List<Shard> shards;
+    List<String> shards;
     int size;
     boolean locked;
 
@@ -55,11 +55,11 @@ public class Frame {
         this.id = id;
     }
 
-    public List<Shard> getShards() {
+    public List<String> getShards() {
         return shards;
     }
 
-    public void setShards(List<Shard> shards) {
+    public void setShards(List<String> shards) {
         this.shards = shards;
     }
 

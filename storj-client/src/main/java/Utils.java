@@ -40,7 +40,7 @@ public class Utils {
         byte[] buffer = new byte[shardSize];
         int length;
         int shardIndex = 0;
-
+        int index = 0;
         // read file, one "buffer" at a time. The buffer is set to the shard size
         // So each read is 1 shard :).
         while ((length = inputStream.read(buffer)) > 0){
@@ -56,7 +56,7 @@ public class Utils {
             shard.setSize(length);
             shard.setHash(new String(getRipemdSha256File(fileShard)));
             shard.setPath(fileShard.getAbsolutePath());
-
+            shard.setIndex(index++);
             addChallenges(shard, length, buffer, numChallenges);
 
             shard.setIndex(shardIndex++);

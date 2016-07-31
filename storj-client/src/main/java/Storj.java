@@ -60,7 +60,10 @@ public class Storj implements StorjClient {
 
         // upload shards.
         for (Shard shard : shards) {
-            AddShardResponse response = storjRestClient.addShardToFrame(frame.getId(), shard);
+            AddShardResponse response = storjRestClient.addShardToFrame(frame.getId(), shard, 8);
+
+            storjRestClient.getFrameById(frame.getId());
+
             String address = "ws://" + response.getFarmer().getAddress() + ":" + response.getFarmer().getPort();
             CountDownLatch latch;
             latch = new CountDownLatch(1);
@@ -87,6 +90,7 @@ public class Storj implements StorjClient {
         bucketEntry.setMimetype(mimeTypeFinder.findMatch(inputFile).getMimeType());
         bucketEntry.setFilename(inputFile.getName());
         bucketEntry.setFrame(frame.getId());
+        bucketEntry.setSize(encryptedFile.length());
 
         // store the bucket entry.
         return storjRestClient.storeFile(bucketId, bucketEntry);

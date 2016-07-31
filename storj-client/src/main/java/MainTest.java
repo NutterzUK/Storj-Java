@@ -31,10 +31,10 @@ public class MainTest {
         StorjClient storj = new Storj(configuration);
         createBucket(storj, "testy");
 
-      //  String bucketId = findFirstBucket(storj).getId();
-      //  String bucketEntryId = uploadFile(storj, new File("C:\\Users\\steve\\Desktop\\cat.jpg"), bucketId);
+        String bucketId = findFirstBucket(storj).getId();
+        String bucketEntryId = uploadFile(storj, new File("C:\\Users\\steve\\Desktop\\cat.jpg"), bucketId);
 
-      //  downloadFile(storj, bucketId, bucketEntryId);
+        downloadFile(storj, bucketId, bucketEntryId);
     }
 
     /**

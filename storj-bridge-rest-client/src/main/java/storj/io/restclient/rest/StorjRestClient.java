@@ -21,6 +21,7 @@ import javax.ws.rs.core.MediaType;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * Created by Stephen Nutbrown on 03/07/2016.
@@ -52,6 +53,9 @@ public class StorjRestClient {
 
 	private static final String INCOMING_MEDIA_TYPE = MediaType.APPLICATION_JSON;
 	private static final String OUTGOING_MEDIA_TYPE = MediaType.APPLICATION_JSON;
+
+	private Logger logger = Logger.getLogger(this.getClass().getName());
+
 
 	/**
 	 * AuthType represents the type of authentication used for the storj API.
@@ -261,10 +265,23 @@ public class StorjRestClient {
 	 *            the ID of the frame to add a shard to.
 	 * @param shard
 	 *            the shard to add.
+	 * @param retries
+	 * 			  the number of times to retry.
 	 * @return the Frame with the shard added.
 	 */
-	public AddShardResponse addShardToFrame(String frameId, Shard shard) {
+	public AddShardResponse addShardToFrame(String frameId, Shard shard, int retries) {
 		String requestUrl = storjApiFrames + "/" + frameId;
+
+		for(int i = 1; i < retries; i++) {
+			logger.info("Attempting to negotiate shard contract, attempt " + i + " of " + retries);
+			try {
+				return getBuilder(requestUrl, shard).put(AddShardResponse.class);
+			} catch (Exception e) {
+				logger.info("Failed with reason: " + e.getMessage());
+			}
+		}
+
+		logger.info("Final attempt to upload shard...");
 		return getBuilder(requestUrl, shard).put(AddShardResponse.class);
 	}
 
