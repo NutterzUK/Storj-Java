@@ -5,58 +5,67 @@ import com.github.kristofa.test.http.MockHttpServer;
 import com.github.kristofa.test.http.SimpleHttpResponseProvider;
 import com.github.kristofa.test.http.UnsatisfiedExpectationException;
 import com.github.kristofa.test.http.client.HttpClient;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.protocol.HTTP;
 import org.apache.log4j.BasicConfigurator;
-import org.junit.After;
+import org.junit.*;
 import org.junit.Assert.*;
-import org.junit.Before;
-import org.junit.Test;
 import storj.io.restclient.auth.BasicAuthType;
 import storj.io.restclient.auth.NoAuthType;
 import storj.io.restclient.model.Bucket;
 import storj.io.restclient.model.User;
+import org.junit.Assume.*;
 
 import javax.ws.rs.core.MediaType;
 
 import java.util.List;
+import java.util.Random;
 
 import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 
 /**
- * Created by steve on 03/07/2016.
+ * Created by Stephen Nutbrown on 03/07/2016.
  */
 public class StorjRestClientTest {
 
+    /**
+     * To also run tests against a live server (Requires active internet connection and access to storj bridge,
+     * set these properties.
+     */
+    private static final boolean TEST_AGAINST_LIVE_SERVER = true;
+    private static final String TEST_LIVE_PASSWORD = "pass";
+    private static final String TEST_LIVE_USERNAME = "user";
+    private static final String TEST_LIVE_API_ROOT = "http://api.storj.io";
 
+    // Mock server.
     private MockHttpServer server;
     private SimpleHttpResponseProvider responseProvider;
+
+    // Clients under test.
     private StorjRestClient noAuthClient;
     private StorjRestClient basicAuthClient;
+    private StorjRestClient noAuthLiveClient;
+    private StorjRestClient basicAuthLiveClient;
 
     // Storj API root.
     private static final int PORT = 51234;
 
     // Contact end points
-    private String storjApiContacts = "/contacts";
+    private static final String storjApiContacts = "/contacts";
 
     // User end points.
-    private String storjApiUsers = "/users";
-    private String storjApiUsersPassReset = "/resets";
-    private String storjApiUsersActivate = "/activations";
-    private String storjApiUsersDeactivate = "/deactivations";
-
-    // Keys
-    private String storjApiKeys = "/keys";
-
-    // Frames
-    private String storjApiFrames = "/frames";
-
-    // Buckets
-    private String storjApiBuckets = "/buckets";
+    private static final String storjApiUsers = "/users";
+    private static final String storjApiUsersPassReset = "/resets";
+    private static final String storjApiUsersActivate = "/activations";
+    private static final String storjApiUsersDeactivate = "/deactivations";
+    private static final String storjApiKeys = "/keys";
+    private static final String storjApiFrames = "/frames";
+    private static final String storjApiBuckets = "/buckets";
 
     @Before
-    public void setUp() throws Exception {
+    public void before() throws Exception {
         // Configure logger.
         BasicConfigurator.configure();
 
@@ -65,12 +74,16 @@ public class StorjRestClientTest {
         server = new MockHttpServer(PORT, responseProvider);
         server.start();
 
-        // Create clients to test.
+        // Create clients to test against mock server.
         String apiRootForClient = "http://localhost:" + PORT;
-        //String apiRootForClient = "https://api.storj.io";
-
         noAuthClient = new StorjRestClient(apiRootForClient, new NoAuthType());
         basicAuthClient = new StorjRestClient(apiRootForClient, new BasicAuthType("user", "pass"));
+
+        // Create clients to test against LIVE server
+        if(TEST_AGAINST_LIVE_SERVER) {
+            noAuthLiveClient = new StorjRestClient(TEST_LIVE_API_ROOT, new NoAuthType());
+            basicAuthLiveClient = new StorjRestClient(TEST_LIVE_API_ROOT, new BasicAuthType(TEST_LIVE_USERNAME, TEST_LIVE_PASSWORD));
+        }
     }
 
     @After
@@ -156,12 +169,21 @@ public class StorjRestClientTest {
     }
 
     @Test
-    public void getAllBuckets() throws Exception {
-
-    }
-
-    @Test
     public void createBucket() throws Exception {
+        String mockResponse = "{\"user\":\"test@test.com\",\"created\":\"2016-07-30T21:40:05.012Z\",\"name\":\"testy\",\"pubkeys\":[],\"status\":\"Active\",\"transfer\":0,\"storage\":0,\"id\":\"123456\"}";
+        String requestBody = "{\"storage\":0,\"transfer\":0,\"status\":null,\"pubkeys\":null,\"user\":null,\"name\":\"testy\",\"created\":null,\"id\":null}";
+
+        responseProvider.expect(Method.POST, storjApiBuckets, MediaType.APPLICATION_JSON, requestBody).respondWith(201, MediaType.APPLICATION_JSON, mockResponse);
+        Bucket bucketToCreate = new Bucket();
+        String name = "testy";
+        bucketToCreate.setName(name);
+
+        Bucket createdBucket = basicAuthClient.createBucket(bucketToCreate);
+        assertEquals(name, createdBucket.getName());
+        assertEquals("test@test.com", createdBucket.getUser());
+        assertEquals(0, createdBucket.getTransfer());
+        assertEquals("123456", createdBucket.getId());
+        responseProvider.verify();
 
     }
 
@@ -233,7 +255,7 @@ public class StorjRestClientTest {
     }
 
     @Test
-    public void getBuckets() {
+    public void getAllBuckets() {
         String mockResponse = "[{\"user\":\"test@test.com\",\"created\":\"2016-07-23T08:43:00.253Z\",\"name\":\"TestBucket\",\"pubkeys\":[],\"status\":\"Active\",\"transfer\":0,\"storage\":0,\"id\":\"1234\"}]";
         responseProvider.expect(Method.GET, storjApiBuckets).respondWith(200, MediaType.APPLICATION_JSON, mockResponse);
 
@@ -248,5 +270,27 @@ public class StorjRestClientTest {
         assertEquals("1234", bucket.getId());
         assertEquals(0, bucket.getTransfer());
         assertEquals(0, bucket.getStorage());
+    }
+
+    @Test
+    public void liveTestCreateUser(){
+        Assume.assumeTrue(TEST_AGAINST_LIVE_SERVER);
+
+        // Set up test user.
+        Random rn = new Random();
+        int randomNumber = rn.nextInt(5000);
+        String emailAddress = randomNumber + "" + System.currentTimeMillis() + "@notreal.com";
+        User user = new User();
+        user.setEmail(emailAddress);
+        user.setPassword("TestPassword");
+
+        // Send request.
+        User createdUser = noAuthLiveClient.createUser(user);
+
+        // Check created user object.
+        assertEquals(emailAddress, createdUser.getEmail());
+        assertFalse(StringUtils.isEmpty(createdUser.getId()));
+        assertNotNull(createdUser.getCreated());
+        assertFalse(createdUser.isActivated());
     }
 }
