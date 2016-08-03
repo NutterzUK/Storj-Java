@@ -15,7 +15,6 @@ public class BasicAuthType implements AuthType{
     private String authorizationHeaderValue;
 
     public BasicAuthType(String username, String password){
-        String passwordHashed = sha256Encrypt(password);
         authorizationHeaderValue = "basic " + base64Encode(username + ":" + sha256Encrypt(password));
     }
 

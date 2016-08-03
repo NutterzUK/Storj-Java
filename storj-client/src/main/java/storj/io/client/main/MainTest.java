@@ -1,24 +1,12 @@
-import com.google.common.base.Charsets;
-import com.google.common.hash.Hashing;
-import com.google.common.primitives.Bytes;
+package storj.io.client.main;
 
-import datatransfer.CodeTestUtils;
-
-import org.bouncycastle.crypto.digests.RIPEMD160Digest;
-import org.bouncycastle.util.encoders.Hex;
-import org.glassfish.tyrus.client.ClientManager;
+import storj.io.client.DefaultStorjClient;
+import storj.io.client.StorjClient;
+import storj.io.client.StorjConfiguration;
 import storj.io.restclient.model.*;
-import storj.io.restclient.rest.StorjRestClient;
 
-import javax.websocket.DeploymentException;
 import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
 
 /**
  * Created by Stephen Nutbrown on 09/07/2016.
@@ -26,27 +14,17 @@ import java.util.concurrent.CountDownLatch;
 public class MainTest {
 
     public static void main(String[] args){
+        //createUser();
         StorjConfiguration configuration = new StorjConfiguration(CodeTestUtils.getEncryptionKey(), CodeTestUtils.getStorjUsername(), CodeTestUtils.getStorjPassword());
         configuration.setApiRoot(CodeTestUtils.getStorjBasePath());
-        StorjClient storj = new Storj(configuration);
+        StorjClient storj = new DefaultStorjClient(configuration);
         createBucket(storj, "testy");
 
         String bucketId = findFirstBucket(storj).getId();
         String bucketEntryId = uploadFile(storj, new File("C:\\Users\\steve\\Desktop\\cat.jpg"), bucketId);
+        storj.downloadFile(bucketId, bucketEntryId, new File("C:\\Users\\steve\\Desktop\\cat2.jpg"));
 
-        downloadFile(storj, bucketId, bucketEntryId);
     }
-
-    /**
-     * Download a file. Currently not yet fully implemented.
-     * @param storj
-     * @param bucketId
-     * @param bucketEntryId
-     */
-    private static void downloadFile(StorjClient storj, String bucketId, String bucketEntryId){
-        storj.downloadFile(bucketId, bucketEntryId);
-    }
-
 
     /**
      * Upload a file to storj as a bucket entry.
@@ -73,7 +51,7 @@ public class MainTest {
      */
     private static Bucket findFirstBucket(StorjClient client){
         Bucket bucket;
-        List<Bucket> buckets = client.getBuckets();
+        List<Bucket> buckets = client.listBuckets();
         if(buckets.isEmpty()){
             bucket = createBucket(client, "TestBucket");
         }else{
@@ -98,7 +76,9 @@ public class MainTest {
      * Creates a user. Note that the user will need the email address verifying.
      */
     private static void createUser(){
-        StorjClient storj = new Storj(new StorjConfiguration(CodeTestUtils.getEncryptionKey()));
+        StorjConfiguration config = new StorjConfiguration((CodeTestUtils.getEncryptionKey()));
+        config.setApiRoot(CodeTestUtils.getStorjBasePath());
+        StorjClient storj = new DefaultStorjClient(config);
         storj.createUser(CodeTestUtils.getStorjUsername(), (CodeTestUtils.getStorjPassword()));
     }
 }

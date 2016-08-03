@@ -1,20 +1,14 @@
-import com.google.common.io.ByteStreams;
+package storj.io.client.websockets;
+
 import com.google.gson.Gson;
-import datatransfer.AuthorizationModel;
-import org.glassfish.tyrus.client.ClientManager;
 import storj.io.restclient.model.AddShardResponse;
 import storj.io.restclient.model.Shard;
 
 import javax.websocket.*;
 import java.io.*;
-import java.net.URI;
 import java.nio.ByteBuffer;
-import java.nio.LongBuffer;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 /**

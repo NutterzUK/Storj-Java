@@ -1,4 +1,4 @@
-# Storj-bridge-rest-client
+# storj.io.client.DefaultStorjClient-bridge-rest-client
 
 This is a REST client for communicating the the storj-bridge, implemented in Java.
 Above this project sits a storj-client, which depends on this project for making HTTP requests.

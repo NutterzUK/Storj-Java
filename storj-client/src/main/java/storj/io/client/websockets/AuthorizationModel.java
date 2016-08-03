@@ -1,4 +1,4 @@
-package datatransfer;
+package storj.io.client.websockets;
 
 import storj.io.restclient.model.Operation;
 

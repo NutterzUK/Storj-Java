@@ -1,3 +1,5 @@
+package storj.io.client.encryption;
+
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
@@ -7,7 +9,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
-public class AESFiles {
+class AESFiles {
 
     private byte[] getKeyBytes(final byte[] key) throws Exception {
         byte[] keyBytes = new byte[16];

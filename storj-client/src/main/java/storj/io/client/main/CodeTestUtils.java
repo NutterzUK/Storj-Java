@@ -1,4 +1,4 @@
-package datatransfer;
+package storj.io.client.main;
 
 /**
  * Utility class containing methods to aid in the continuous testing of code.
@@ -37,7 +37,7 @@ public final class CodeTestUtils {
      * {@value #USERNAME_PROPERTY}. If the system property is not set the
      * default of {@value #DEFAULT_USERNAME} is used.
      *
-     * @return the test Storj username
+     * @return the test storj.io.client.DefaultStorjClient username
      */
     public static String getStorjUsername() {
         return System.getProperty(USERNAME_PROPERTY, DEFAULT_USERNAME);
@@ -48,7 +48,7 @@ public final class CodeTestUtils {
      * {@value #PASSWORD_PROPERTY}. If the system property is not set the
      * default of {@value #DEFAULT_PASSWORD} is used.
      *
-     * @return the test Storj password
+     * @return the test storj.io.client.DefaultStorjClient password
      */
     public static String getStorjPassword() {
         return System.getProperty(PASSWORD_PROPERTY, DEFAULT_PASSWORD);
@@ -59,7 +59,7 @@ public final class CodeTestUtils {
      * {@value #BASEPATH_PROPERTY}. If the system property is not set the
      * default of {@value #DEFAULT_BASEPATH} is used.
      *
-     * @return the test Storj base path
+     * @return the test storj.io.client.DefaultStorjClient base path
      */
     public static String getStorjBasePath() {
         return System.getProperty(BASEPATH_PROPERTY, DEFAULT_BASEPATH);

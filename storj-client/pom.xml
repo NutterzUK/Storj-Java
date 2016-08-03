@@ -9,7 +9,7 @@
 	<version>0.1</version>
     <packaging>jar</packaging>
 	
-	<name>Client for the Storj project.</name>
+	<name>Client for the storj.io.client.DefaultStorjClient project.</name>
     <url>http://storj.io</url>
 
     <developers>
@@ -85,6 +85,13 @@
             <groupId>com.j256.simplemagic</groupId>
             <artifactId>simplemagic</artifactId>
             <version>1.1</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>19.0</version>
         </dependency>
 
 

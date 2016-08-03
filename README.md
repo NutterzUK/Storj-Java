@@ -8,6 +8,6 @@ If you are looking to include a storj client in your project, you'll want the st
 If you are ONLY looking for handling HTTP requests and wish to implement file sharding and encryption yourself, you may use the storj-bridge-rest-client.
 ```
 ++ Parent project
-++++ Storj-client
-+++++++ Storj-bridge-rest-client
+++++ storj.io.client.DefaultStorjClient-client
++++++++ storj.io.client.DefaultStorjClient-bridge-rest-client
 ```

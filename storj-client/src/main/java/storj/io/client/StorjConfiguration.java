@@ -1,3 +1,5 @@
+package storj.io.client;
+
 import com.google.common.io.Files;
 import org.apache.commons.lang3.ObjectUtils;
 import storj.io.restclient.auth.AuthType;
@@ -8,7 +10,7 @@ import java.io.File;
 import java.util.logging.Logger;
 
 /**
- * Created by steve on 23/07/2016.
+ * Created by Stephen Nutbrown on 23/07/2016.
  */
 public class StorjConfiguration {
 

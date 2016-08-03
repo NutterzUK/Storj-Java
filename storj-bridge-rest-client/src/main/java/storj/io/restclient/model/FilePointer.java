@@ -7,7 +7,6 @@ public class FilePointer {
     String hash;
     String token;
     Operation operation;
-    String channel;
     Contact farmer;
     long size;
 
@@ -51,21 +50,13 @@ public class FilePointer {
         this.operation = operation;
     }
 
-    public String getChannel() {
-        return channel;
-    }
-
-    public void setChannel(String channel) {
-        this.channel = channel;
-    }
-
     @Override
     public String toString() {
         return "FilePointer{" +
                 "hash='" + hash + '\'' +
                 ", token='" + token + '\'' +
                 ", operation=" + operation +
-                ", channel='" + channel + '\'' +
+                '\'' +
                 '}';
     }
 }

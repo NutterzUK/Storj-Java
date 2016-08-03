@@ -1,15 +1,15 @@
+package storj.io.client.sharding;
+
 import com.google.common.base.Charsets;
-import com.google.common.hash.Hashing;
 import com.google.common.primitives.Bytes;
-import org.bouncycastle.crypto.digests.RIPEMD160Digest;
 import org.bouncycastle.util.encoders.Hex;
+import storj.io.client.encryption.EncryptionUtils;
 import storj.io.restclient.model.Shard;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -20,17 +20,15 @@ import static java.nio.file.Files.readAllBytes;
 /**
  * Created by Stephen Nutbrown on 09/07/2016.
  */
-public class Utils {
+public class ShardingUtils {
 
-
-    public static void encryptFile(File input, File output, String key) throws Exception {
-        new AESFiles().encrypt(input, output, key.getBytes());
-    }
-
-    public static void decryptFile(File input, File output, String key) throws Exception {
-        new AESFiles().decrypt(input, output, key.getBytes());
-    }
-
+    /**
+     * Utility method to split a file into several shards.
+     * @param input the file to split into shards.
+     * @param shardSize the size (in bytes) the shards should be.
+     * @return the shards.
+     * @throws Exception problem sharding the file.
+     */
     public static List<Shard> shardFile(File input, int shardSize) throws Exception {
         ArrayList<Shard> shards = new ArrayList<Shard>();
 
@@ -54,10 +52,10 @@ public class Utils {
             // create shard object pointing to the file.
             Shard shard = new Shard();
             shard.setSize(length);
-            shard.setHash(new String(getRipemdSha256File(fileShard)));
+            shard.setHash(new String(EncryptionUtils.getRipemdSha256File(fileShard)));
             shard.setPath(fileShard.getAbsolutePath());
             shard.setIndex(index++);
-            addChallenges(shard, length, buffer, numChallenges);
+            addChallenges(shard, buffer, numChallenges);
 
             shard.setIndex(shardIndex++);
             shards.add(shard);
@@ -65,61 +63,35 @@ public class Utils {
         return shards;
     }
 
-    public static void addChallenges(Shard shard, int shardLength, byte[] shardData, int numberOfChallenges){
+    /**
+     * Create challenges for a shard.
+     * @param shard the shard to create challenges for.
+     * @param shardData the data contained in the shard.
+     * @param numberOfChallenges the number of challenges.
+     */
+    public static void addChallenges(Shard shard, byte[] shardData, int numberOfChallenges){
         for(int i = 0; i< numberOfChallenges; i++) {
             String randomChallenge = getRandomChallengeString();
             byte[] challengeBytes = randomChallenge.getBytes(Charsets.UTF_8);
 
             // trim empty space at the end of shardData.
-            shardData = Arrays.copyOf(shardData, shardLength);
+            shardData = Arrays.copyOf(shardData, (int)shard.getSize());
 
             // Data to hash = challenge + shard data.
             byte[] dataToHash = Hex.encode(Bytes.concat(challengeBytes, shardData));
 
             // RMD160(SHA256(RMD160(SHA256(challenge + shard))))
-            byte[] tree = rmd160Sha256(rmd160Sha256(dataToHash));
+            byte[] tree = EncryptionUtils.rmd160Sha256(EncryptionUtils.rmd160Sha256(dataToHash));
 
             shard.getChallenges().add(randomChallenge);
             shard.getTree().add(new String(tree));
         }
     }
 
-    public static byte[] rmd160Sha256(byte[] input){
-
-        byte[] sha256 = Hashing.sha256().hashBytes(input).asBytes();
-        sha256 = Hex.encode(sha256);
-
-        RIPEMD160Digest digest = new RIPEMD160Digest();
-        digest.update(sha256, 0, sha256.length);
-        byte[] output = new byte[digest.getDigestSize()];
-        digest.doFinal (output, 0);
-
-        output = Hex.encode(output);
-
-        return output;
-    }
-
-
     /**
-     * More efficient for files than rmd160sha256 as it uses streaming.
-     * @param file the file to hash
-     * @return the file after sha256 and ripemd160.
-     * @throws Exception
+     * Creates a random 32 byte string.
+     * @return a random 32 byte string.
      */
-    public static byte[] getRipemdSha256File(File file) throws Exception{
-        // Get sha256 for the file.
-        byte[] sha256sBytes = com.google.common.io.Files.hash(file, Hashing.sha256()).asBytes();
-        sha256sBytes = Hex.encode(sha256sBytes);
-
-        // Get RIPEMD160 for that.
-        RIPEMD160Digest digest = new RIPEMD160Digest();
-        digest.update (sha256sBytes, 0, sha256sBytes.length);
-        byte[] output = new byte[digest.getDigestSize()];
-        digest.doFinal (output, 0);
-        output = Hex.encode(output);
-        return output;
-    }
-
     public static String getRandomChallengeString(){
         int numChars = 32;
 
@@ -131,10 +103,16 @@ public class Utils {
         return sb.toString().substring(0, numChars);
     }
 
-    public static void pieceTogetherFile(List<File> shards, File destination) throws Exception {
+    /**
+     * Take several shards and put them back together into one file.
+     * Note this does not decrypt the file.
+     * @param shards the shards.
+     * @param destination the destination to put the combined file.
+     * @throws IOException Problem reading/writing.
+     */
+    public static void pieceTogetherFile(List<File> shards, File destination) throws IOException {
         FileOutputStream outputStream = new FileOutputStream(destination);
         for(File shard : shards) {
-            FileInputStream inputStream = new FileInputStream(shard);
             byte[] shardBytes = readAllBytes(shard.toPath());
             outputStream.write(shardBytes);
         }

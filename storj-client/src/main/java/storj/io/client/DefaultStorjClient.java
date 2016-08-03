@@ -1,24 +1,38 @@
+package storj.io.client;
+
 import com.j256.simplemagic.ContentInfoUtil;
 import org.glassfish.tyrus.client.ClientManager;
+import storj.io.client.encryption.EncryptionUtils;
+import storj.io.client.sharding.ShardingUtils;
+import storj.io.client.websockets.StorjWebsocketClient;
+import storj.io.client.websockets.WebsocketFileRetriever;
 import storj.io.restclient.model.*;
 import storj.io.restclient.rest.StorjRestClient;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import javax.websocket.ClientEndpointConfig;
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.logging.Logger;
 
 
 /**
  * Created by Stephen Nutbrown on 23/07/2016.
  */
-public class Storj implements StorjClient {
+public class DefaultStorjClient implements StorjClient {
+
+    private Logger logger = Logger.getLogger(this.getClass().getName());
 
     StorjConfiguration config;
     StorjRestClient storjRestClient;
 
-    public Storj(StorjConfiguration config) {
+    /**
+     * Construct a storj.io.client.DefaultStorjClient client using the config.
+     * @param config the config for the client.
+     */
+    public DefaultStorjClient(StorjConfiguration config) {
         this.config = config;
         storjRestClient = new StorjRestClient(config.getApiRoot(), config.getAuth());
     }
@@ -27,21 +41,10 @@ public class Storj implements StorjClient {
         this.config = configuration;
     }
 
-    /**
-     * Return the configuration of this Storj client.
-     * @return the storj client configuration.
-     */
     public StorjConfiguration getConguration() {
         return config;
     }
 
-    /**
-     * Upload a file
-     * @param inputFile the file to upload.
-     * @param bucketId the ID of the bucket to upload to.
-     * @return A bucket entry representing the file on the bridge.
-     * @throws Exception Problem uploading file.
-     */
     public BucketEntry uploadFile(File inputFile, String bucketId) throws Exception {
         String encryptionPassword = config.getEncryptionKey();
         // Create encrypted file.
@@ -50,10 +53,10 @@ public class Storj implements StorjClient {
         File encryptedFile = new File(config.getTempDirectoryForShards().getPath()+ "/" + inputFile.getName()+ ".encrypted");
 
         // Create encrypted file.
-        Utils.encryptFile(inputFile, encryptedFile, encryptionPassword);
+        EncryptionUtils.encryptFile(inputFile, encryptedFile, encryptionPassword);
 
         // Shard the file.
-        List<Shard> shards = Utils.shardFile(inputFile, config.getShardSizeInBytes());
+        List<Shard> shards = ShardingUtils.shardFile(inputFile, config.getShardSizeInBytes());
 
         // create a frame.
         Frame frame = storjRestClient.createFrame();
@@ -97,110 +100,91 @@ public class Storj implements StorjClient {
 
     }
 
-    /**
-     * Upload a file to the storj network.
-     * @param file the file to upload.
-     * @param bucket the bucket to upload to.
-     * @return a bucket entry representing the file stored on the bridge.
-     * @throws Exception problem uploading file.
-     */
     public BucketEntry uploadFile(File file, Bucket bucket) throws Exception {
         return uploadFile(file, bucket.getId());
     }
 
-    /**
-     * Download a file into the temp directory specified in the StorjConfiguration.
-     * This call takes care of retrieving the file shards and piecing the file back together.
-     * @param bucketEntry the Bucket entry to retrieve.
-     * @return A file pointer to the retrieved file.
-     */
-    public File downloadFile(BucketEntry bucketEntry) {
-        return downloadFile(bucketEntry.getBucket(), bucketEntry.getId());
+    public File downloadFile(BucketEntry bucketEntry, File outputFile) {
+        return downloadFile(bucketEntry.getBucket(), bucketEntry.getId(), outputFile);
     }
 
-    /**
-     * Download a file into the temp directory specified in the StorjConfiguration.
-     * This call takes care of retrieving the file shards and piecing the file back together.
-     * @param bucketId the ID of the bucket.
-     * @param bucketEntryId the ID of the bucketEntry
-     * @return A file pointer to the retrieved file.
-     */
-    public File downloadFile(String bucketId, String bucketEntryId) {
+    public File downloadFile(String bucketId, String bucketEntryId, File outputFile) {
+        File encryptedOutputFile = null;
+        try {
+            encryptedOutputFile = File.createTempFile("temp","encrypted");
+            logger.info(encryptedOutputFile.getAbsolutePath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
         Token token = storjRestClient.getTokenForBucket(bucketId, Operation.PULL);
         List<FilePointer> pointers = storjRestClient.getFilePointers(bucketId, bucketEntryId, token.getToken());
-        throw new NotImplementedException();
+
+        // upload shards.
+        for (FilePointer pointer : pointers) {
+            CountDownLatch latch;
+            latch = new CountDownLatch(1);
+            ClientManager wsClient = ClientManager.createClient();
+            try {
+                wsClient.setDefaultMaxBinaryMessageBufferSize(Integer.MAX_VALUE);
+                wsClient.setDefaultMaxTextMessageBufferSize(Integer.MAX_VALUE);
+                logger.info("CONNECTING TO: " + "ws://" + pointer.getFarmer().getAddress() + ":" + pointer.getFarmer().getPort());
+                final ClientEndpointConfig cec = ClientEndpointConfig.Builder.create().build();
+
+                wsClient.connectToServer(new WebsocketFileRetriever(pointer, encryptedOutputFile, latch), cec, new URI("ws://" + pointer.getFarmer().getAddress() + ":" + pointer.getFarmer().getPort()));
+                latch.await();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        try {
+            EncryptionUtils.decryptFile(encryptedOutputFile, outputFile, config.getEncryptionKey());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return outputFile;
     }
 
-    /**
-     * Get all buckets.
-     * @return all buckets for the user.
-     */
-    public List<Bucket> getBuckets() {
+    public List<Bucket> listBuckets() {
         return storjRestClient.getAllBuckets();
     }
 
-    /**
-     * Get a bucket by it's ID.
-     * @param bucketId the bucket ID.
-     * @return the bucket.
-     */
     public Bucket getBucket(String bucketId) {
         return storjRestClient.getBucketById(bucketId);
     }
 
-    /**
-     * Create a bucket.
-     * @param bucketName the name of the bucket to create.
-     * @return the created bucket.
-     */
     public Bucket createBucket(String bucketName) {
         Bucket bucket = new Bucket();
         bucket.setName(bucketName);
         return storjRestClient.createBucket(bucket);
     }
 
-    /**
-     * Delete a bucket.
-     * @param buckeId the ID of the bucket to delete.
-     */
     public void deleteBucket(String buckeId) {
         storjRestClient.deleteBucket(buckeId);
     }
 
-    /**
-     * Deletes a bucket.
-     * @param bucket the bucket to delete.
-     */
     public void deleteBucket(Bucket bucket) {
         deleteBucket(bucket.getId());
     }
 
-    /**
-     * Request a password reset email.
-     * @param emailAddress the email address of the account to reset.
-     */
     public void resetPassword(String emailAddress) {
         storjRestClient.resetPassword(emailAddress);
     }
 
-    /**
-     * Request a password reset email.
-     * @param user the user account to reset.
-     */
     public void resetPassword(User user) {
         resetPassword(user.getEmail());
     }
 
-    /**
-     * Create a user. Warning: The users account will need verifying before using.
-     * @param email the email address of the user.
-     * @param password the password of the user.
-     * @return An object from the bridge representing a user.
-     */
     public User createUser(String email, String password) {
         User user = new User();
         user.setEmail(email);
         user.setPassword(password);
         return storjRestClient.createUser(user);
+    }
+
+    public List<BucketEntry> listFiles(String bucketId) {
+        return storjRestClient.getFilesInBucket(bucketId);
     }
 }

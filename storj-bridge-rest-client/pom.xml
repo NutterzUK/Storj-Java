@@ -9,7 +9,7 @@
     <version>0.1</version>
     <packaging>jar</packaging>
 
-    <name>Java based rest client for the Storj project.</name>
+    <name>Java based rest client for the storj.io.client.DefaultStorjClient project.</name>
     <url>http://storj.io</url>
 
     <developers>
