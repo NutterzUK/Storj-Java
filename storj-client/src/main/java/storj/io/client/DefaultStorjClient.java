@@ -4,7 +4,7 @@ import com.j256.simplemagic.ContentInfoUtil;
 import org.glassfish.tyrus.client.ClientManager;
 import storj.io.client.encryption.EncryptionUtils;
 import storj.io.client.sharding.ShardingUtils;
-import storj.io.client.websockets.StorjWebsocketClient;
+import storj.io.client.websockets.WebsocketShardSender;
 import storj.io.client.websockets.WebsocketFileRetriever;
 import storj.io.restclient.model.*;
 import storj.io.restclient.rest.StorjRestClient;
@@ -72,7 +72,7 @@ public class DefaultStorjClient implements StorjClient {
             latch = new CountDownLatch(1);
             ClientManager wsClient = ClientManager.createClient();
             try {
-                wsClient.connectToServer(new StorjWebsocketClient(shard, response, latch), null, new URI(address));
+                wsClient.connectToServer(new WebsocketShardSender(shard, response, latch), null, new URI(address));
                 latch.await();
             } catch (Exception e) {
                 throw new RuntimeException(e);

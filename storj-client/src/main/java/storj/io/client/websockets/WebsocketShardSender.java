@@ -15,7 +15,7 @@ import java.util.logging.Logger;
  * Created by steve on 12/07/2016.
  */
 @ClientEndpoint
-public class StorjWebsocketClient{
+public class WebsocketShardSender {
 
     private Logger logger = Logger.getLogger(this.getClass().getName());
     private Gson gson = new Gson();
@@ -24,7 +24,7 @@ public class StorjWebsocketClient{
     private AuthorizationModel authModel;
     private CountDownLatch latch;
 
-    public StorjWebsocketClient(Shard shard, AddShardResponse destination, CountDownLatch latch){
+    public WebsocketShardSender(Shard shard, AddShardResponse destination, CountDownLatch latch){
         this.shard = shard;
         this.destination = destination;
         this.latch = latch;
