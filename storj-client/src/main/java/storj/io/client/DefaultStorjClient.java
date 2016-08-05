@@ -83,8 +83,7 @@ public class DefaultStorjClient implements StorjClient {
             }
         }
 
-        // clean up encrypted file
-        encryptedFile.delete();
+
 
         // Create the bucket entry.
         BucketEntry bucketEntry = new BucketEntry();
@@ -94,6 +93,9 @@ public class DefaultStorjClient implements StorjClient {
         bucketEntry.setFilename(inputFile.getName());
         bucketEntry.setFrame(frame.getId());
         bucketEntry.setSize(encryptedFile.length());
+
+        // clean up encrypted file
+        encryptedFile.delete();
 
         // store the bucket entry.
         return storjRestClient.storeFile(bucketId, bucketEntry);
