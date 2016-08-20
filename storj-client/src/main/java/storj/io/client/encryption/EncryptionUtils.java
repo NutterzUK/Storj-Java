@@ -61,7 +61,9 @@ public class EncryptionUtils {
     public static byte[] getRipemdSha256File(File file) throws Exception{
         // Get sha256 for the file.
         byte[] sha256sBytes = com.google.common.io.Files.hash(file, Hashing.sha256()).asBytes();
-        sha256sBytes = Hex.encode(sha256sBytes);
+
+        // Updated in v3.0 of storj bridge.
+        //sha256sBytes = Hex.encode(sha256sBytes);
 
         // Get RIPEMD160 for that.
         RIPEMD160Digest digest = new RIPEMD160Digest();

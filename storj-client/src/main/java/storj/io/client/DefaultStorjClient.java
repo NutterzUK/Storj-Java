@@ -106,6 +106,10 @@ public class DefaultStorjClient implements StorjClient {
         return uploadFile(file, bucket.getId());
     }
 
+    public void deleteFile(String bucketId, String fileId){
+        storjRestClient.destroyFileEntry(bucketId, fileId);
+    }
+
     public File downloadFile(BucketEntry bucketEntry, File outputFile) {
         return downloadFile(bucketEntry.getBucket(), bucketEntry.getId(), outputFile);
     }

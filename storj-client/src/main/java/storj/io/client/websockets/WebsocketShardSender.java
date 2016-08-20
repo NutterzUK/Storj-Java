@@ -37,9 +37,8 @@ public class WebsocketShardSender {
     }
 
     @OnMessage
-    public String onMessage(String message, Session session) {
-        logger.info("Received ...." + message);
-        return message;
+    public void onMessage(String message, Session session) {
+        logger.info(message);
     }
 
     @OnOpen
@@ -63,6 +62,7 @@ public class WebsocketShardSender {
 
     @OnClose
     public void onClose(Session session, CloseReason closeReason) {
+        logger.info("Websocket closed with reason" + closeReason);
         latch.countDown();
     }
 }

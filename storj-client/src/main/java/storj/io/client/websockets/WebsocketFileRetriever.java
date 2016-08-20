@@ -32,7 +32,11 @@ public class WebsocketFileRetriever {
         authModel.setToken(filePointer.getToken());
         authModel.setOperation(filePointer.getOperation());
         authModel.setHash(filePointer.getHash());
-        logger.info(gson.toJson(authModel));
+    }
+
+    @OnMessage
+    public void onMessage(String s){
+        logger.info("Received ... " + s);
     }
 
     @OnMessage
@@ -49,13 +53,13 @@ public class WebsocketFileRetriever {
             e.printStackTrace();
         }
 
-        logger.info("sent");
+        logger.info("sent: " + gson.toJson(authModel));
     }
 
     @OnClose
     public void onClose(Session session, CloseReason closeReason) {
-        logger.info("Closed Websocket: " + closeReason.getReasonPhrase());
-        latch.countDown();
+        logger.info("Closed Websocket: " + closeReason.getCloseCode() + " " + closeReason.getReasonPhrase());
+        //latch.countDown();
     }
 
     @OnError

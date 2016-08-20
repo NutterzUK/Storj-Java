@@ -6,7 +6,7 @@
 
     <groupId>storj</groupId>
     <artifactId>storj-client</artifactId>
-	<version>0.1</version>
+	<version>0.4</version>
     <packaging>jar</packaging>
 	
 	<name>Client for the storj.io.client.DefaultStorjClient project.</name>

@@ -15,6 +15,7 @@ public class MainTest {
 
     public static void main(String[] args){
         //createUser();
+        //System.exit(0);
         StorjConfiguration configuration = new StorjConfiguration(CodeTestUtils.getEncryptionKey(), CodeTestUtils.getStorjUsername(), CodeTestUtils.getStorjPassword());
         configuration.setApiRoot(CodeTestUtils.getStorjBasePath());
         StorjClient storj = new DefaultStorjClient(configuration);

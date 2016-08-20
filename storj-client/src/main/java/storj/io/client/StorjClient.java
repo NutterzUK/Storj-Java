@@ -13,20 +13,23 @@ import java.util.List;
 public interface StorjClient {
     /**
      * Set the storj configuration.
+     *
      * @param configuration the storj configuration to set.
      */
     void setConfiguration(StorjConfiguration configuration);
 
     /**
      * Return the configuration of this storj.io.client.DefaultStorjClient client.
+     *
      * @return the storj client configuration.
      */
     StorjConfiguration getConguration();
 
     /**
      * Upload a file
+     *
      * @param inputFile the file to upload.
-     * @param bucketId the ID of the bucket to upload to.
+     * @param bucketId  the ID of the bucket to upload to.
      * @return A bucket entry representing the file on the bridge.
      * @throws Exception Problem uploading file.
      */
@@ -34,7 +37,8 @@ public interface StorjClient {
 
     /**
      * Upload a file to the storj network.
-     * @param file the file to upload.
+     *
+     * @param file   the file to upload.
      * @param bucket the bucket to upload to.
      * @return a bucket entry representing the file stored on the bridge.
      * @throws Exception problem uploading file.
@@ -44,6 +48,7 @@ public interface StorjClient {
     /**
      * Download a file into the temp directory specified in the storj.io.client.StorjConfiguration.
      * This call takes care of retrieving the file shards and piecing the file back together.
+     *
      * @param bucketEntry the Bucket entry to retrieve.
      * @return A file pointer to the retrieved file.
      */
@@ -52,21 +57,24 @@ public interface StorjClient {
     /**
      * Download a file into the temp directory specified in the storj.io.client.StorjConfiguration.
      * This call takes care of retrieving the file shards and piecing the file back together.
-     * @param bucketId the ID of the bucket.
+     *
+     * @param bucketId      the ID of the bucket.
      * @param bucketEntryId the ID of the bucketEntry
-     * @param outputFile The file to output to.
+     * @param outputFile    The file to output to.
      * @return A file pointer to the retrieved file.
      */
     File downloadFile(String bucketId, String bucketEntryId, File outputFile);
 
     /**
      * Get all buckets.
+     *
      * @return all buckets for the user.
      */
     List<Bucket> listBuckets();
 
     /**
      * Get a bucket by it's ID.
+     *
      * @param bucketId the bucket ID.
      * @return the bucket.
      */
@@ -74,6 +82,7 @@ public interface StorjClient {
 
     /**
      * Create a bucket.
+     *
      * @param bucketName the name of the bucket to create.
      * @return the created bucket.
      */
@@ -81,31 +90,36 @@ public interface StorjClient {
 
     /**
      * Delete a bucket.
+     *
      * @param buckeId the ID of the bucket to delete.
      */
     void deleteBucket(String buckeId);
 
     /**
      * Deletes a bucket.
+     *
      * @param bucket the bucket to delete.
      */
     void deleteBucket(Bucket bucket);
 
     /**
      * Request a password reset email.
+     *
      * @param emailAddress the email address of the account to reset.
      */
     void resetPassword(String emailAddress);
 
     /**
      * Request a password reset email.
+     *
      * @param user the user account to reset.
      */
     void resetPassword(User user);
 
     /**
      * Create a user. Warning: The users account will need verifying before using.
-     * @param email the email address of the user.
+     *
+     * @param email    the email address of the user.
      * @param password the password of the user.
      * @return An object from the bridge representing a user.
      */
@@ -113,8 +127,19 @@ public interface StorjClient {
 
     /**
      * Get a list of files stored in a bucket.
+     *
      * @param bucketId the ID of the bucket.
      * @return the files stored in the bucket.
      */
     List<BucketEntry> listFiles(String bucketId);
+
+    /**
+     * Delete a file.
+     *
+     * @param bucketId The bucket ID the file lives in.
+     * @param fileId   the file ID.
+     */
+    void deleteFile(String bucketId, String fileId);
+
 }
+
