@@ -72,7 +72,7 @@ public class DefaultStorjClient implements StorjClient {
             latch = new CountDownLatch(1);
             ClientManager wsClient = ClientManager.createClient();
             try {
-                wsClient.connectToServer(new WebsocketShardSender(shard, response, latch), null, new URI(address));
+                wsClient.connectToServer(new WebsocketShardSender(shard, response, latch), new URI(address));
                 latch.await();
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -136,9 +136,10 @@ public class DefaultStorjClient implements StorjClient {
                 wsClient.setDefaultMaxBinaryMessageBufferSize(Integer.MAX_VALUE);
                 wsClient.setDefaultMaxTextMessageBufferSize(Integer.MAX_VALUE);
                 logger.info("CONNECTING TO: " + "ws://" + pointer.getFarmer().getAddress() + ":" + pointer.getFarmer().getPort());
+
                 final ClientEndpointConfig cec = ClientEndpointConfig.Builder.create().build();
 
-                wsClient.connectToServer(new WebsocketFileRetriever(pointer, encryptedOutputFile, latch), cec, new URI("ws://" + pointer.getFarmer().getAddress() + ":" + pointer.getFarmer().getPort()));
+                wsClient.connectToServer(new WebsocketFileRetriever(pointer, encryptedOutputFile, latch), new URI("ws://" + pointer.getFarmer().getAddress() + ":" + pointer.getFarmer().getPort()));
                 latch.await();
             } catch (Exception e) {
                 throw new RuntimeException(e);

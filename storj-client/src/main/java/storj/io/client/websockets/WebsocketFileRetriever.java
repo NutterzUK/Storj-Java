@@ -7,7 +7,6 @@ import javax.websocket.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-
 import java.util.concurrent.CountDownLatch;
 import java.util.logging.Logger;
 
@@ -36,23 +35,25 @@ public class WebsocketFileRetriever {
 
     @OnMessage
     public void onMessage(String s){
-        logger.info("Received ... " + s);
+        logger.info("Received text... " + s);
     }
 
     @OnMessage
-    public void onMessage(ByteBuffer message, Session session) {
-        logger.info("Received ...." + message);
+    public void onMessage(ByteBuffer message) {
+        // Why does this never happen?
+        logger.info("Received binary" + message);
     }
 
     @OnOpen
     public void onOpen(Session session, EndpointConfig endpointConfig) {
-        logger.info("Opened");
+        logger.info("Opened, sending auth message as text: " + gson.toJson(authModel));
+        ByteBuffer buffer = ByteBuffer.allocate(gson.toJson(authModel).getBytes().length);
+        buffer.put(gson.toJson(authModel).getBytes());
         try {
-            session.getBasicRemote().sendText(gson.toJson(authModel), true);
+            session.getBasicRemote().sendBinary(buffer, true);
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         logger.info("sent: " + gson.toJson(authModel));
     }
 

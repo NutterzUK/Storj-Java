@@ -6,6 +6,8 @@ import storj.io.client.StorjConfiguration;
 import storj.io.restclient.model.*;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 
 /**
@@ -14,17 +16,21 @@ import java.util.List;
 public class MainTest {
 
     public static void main(String[] args){
-        //createUser();
-        //System.exit(0);
+
+        // Default username/password has been set in CodeTestUtils.
         StorjConfiguration configuration = new StorjConfiguration(CodeTestUtils.getEncryptionKey(), CodeTestUtils.getStorjUsername(), CodeTestUtils.getStorjPassword());
         configuration.setApiRoot(CodeTestUtils.getStorjBasePath());
         StorjClient storj = new DefaultStorjClient(configuration);
-        createBucket(storj, "testy");
 
-        String bucketId = findFirstBucket(storj).getId();
-        String bucketEntryId = uploadFile(storj, new File("C:\\Users\\steve\\Desktop\\cat.jpg"), bucketId);
-        storj.downloadFile(bucketId, bucketEntryId, new File("C:\\Users\\steve\\Desktop\\cat2.jpg"));
+        String bucketId = "57c18eec9406cc935c779667";
+        String bucketEntryId = "57c18f8e560e14144688f46a";
 
+        try {
+            File temp = File.createTempFile("temp-file-name", ".tmp");
+            storj.downloadFile(bucketId, bucketEntryId, temp);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**

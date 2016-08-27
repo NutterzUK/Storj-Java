@@ -10,10 +10,10 @@ package storj.io.client.main;
 public final class CodeTestUtils {
 
     private static final String USERNAME_PROPERTY = "storj_username";
-    private static final String DEFAULT_USERNAME = "steveswfc@gmail.com";
+    private static final String DEFAULT_USERNAME = "costifrope@throwam.com";
 
     private static final String PASSWORD_PROPERTY = "storj_password";
-    private static final String DEFAULT_PASSWORD = "testpassword";
+    private static final String DEFAULT_PASSWORD = "stackoverflow";
 
     private static final String BASEPATH_PROPERTY = "storj_basepath";
     private static final String DEFAULT_BASEPATH = "https://api.storj.io";
