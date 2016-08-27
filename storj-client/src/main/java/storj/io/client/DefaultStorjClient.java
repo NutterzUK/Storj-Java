@@ -1,9 +1,11 @@
 package storj.io.client;
 
+import com.google.gson.Gson;
 import com.j256.simplemagic.ContentInfoUtil;
 import org.glassfish.tyrus.client.ClientManager;
 import storj.io.client.encryption.EncryptionUtils;
 import storj.io.client.sharding.ShardingUtils;
+import storj.io.client.websockets.AuthorizationModel;
 import storj.io.client.websockets.WebsocketShardSender;
 import storj.io.client.websockets.WebsocketFileRetriever;
 import storj.io.restclient.model.*;
@@ -136,9 +138,18 @@ public class DefaultStorjClient implements StorjClient {
                 wsClient.setDefaultMaxBinaryMessageBufferSize(Integer.MAX_VALUE);
                 wsClient.setDefaultMaxTextMessageBufferSize(Integer.MAX_VALUE);
                 logger.info("CONNECTING TO: " + "ws://" + pointer.getFarmer().getAddress() + ":" + pointer.getFarmer().getPort());
-
                 final ClientEndpointConfig cec = ClientEndpointConfig.Builder.create().build();
 
+
+                // Some useful debug for finding why Tyrus seems to not receive bytes.
+                AuthorizationModel authModel = new AuthorizationModel();
+                authModel.setToken(pointer.getToken());
+                authModel.setOperation(pointer.getOperation());
+                authModel.setHash(pointer.getHash());
+                logger.info("Token: " + new Gson().toJson(authModel));
+                // Exit here if you want to test outside of the Tyrus client.
+
+                //System.exit(0);
                 wsClient.connectToServer(new WebsocketFileRetriever(pointer, encryptedOutputFile, latch), new URI("ws://" + pointer.getFarmer().getAddress() + ":" + pointer.getFarmer().getPort()));
                 latch.await();
             } catch (Exception e) {
