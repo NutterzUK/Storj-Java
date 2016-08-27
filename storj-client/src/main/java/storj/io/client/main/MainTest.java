@@ -22,8 +22,8 @@ public class MainTest {
         configuration.setApiRoot(CodeTestUtils.getStorjBasePath());
         StorjClient storj = new DefaultStorjClient(configuration);
 
-        String bucketId = "57c18eec9406cc935c779667";
-        String bucketEntryId = "57c18f8e560e14144688f46a";
+        String bucketId = "57c190e16d89ebce22c512c7";
+        String bucketEntryId = "57c19121a04f078a52c72221";
 
         try {
             File temp = File.createTempFile("temp-file-name", ".tmp");
