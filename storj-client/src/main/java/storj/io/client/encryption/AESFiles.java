@@ -62,9 +62,13 @@ class AESFiles {
                 fis.close();
             }
         }
+        System.out.println("Encrypted SIZE " + outputFile.length());
+
     }
 
     public void decrypt(File inputFile, File outputFile, byte[] key) throws Exception {
+        long length = inputFile.length();
+        System.out.println("Size before decrypt " + length);
         Cipher cipher = getCipherDecrypt(key);
         FileOutputStream fos = null;
         CipherInputStream cis = null;

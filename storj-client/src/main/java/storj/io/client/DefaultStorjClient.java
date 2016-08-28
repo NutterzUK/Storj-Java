@@ -2,16 +2,16 @@ package storj.io.client;
 
 import com.google.gson.Gson;
 import com.j256.simplemagic.ContentInfoUtil;
-import org.glassfish.tyrus.client.ClientManager;
+import org.java_websocket.drafts.Draft_10;
+import org.java_websocket.drafts.Draft_17;
 import storj.io.client.encryption.EncryptionUtils;
 import storj.io.client.sharding.ShardingUtils;
 import storj.io.client.websockets.AuthorizationModel;
-import storj.io.client.websockets.WebsocketShardSender;
 import storj.io.client.websockets.WebsocketFileRetriever;
+import storj.io.client.websockets.WebsocketShardSender;
 import storj.io.restclient.model.*;
 import storj.io.restclient.rest.StorjRestClient;
 
-import javax.websocket.ClientEndpointConfig;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -48,8 +48,8 @@ public class DefaultStorjClient implements StorjClient {
     }
 
     public BucketEntry uploadFile(File inputFile, String bucketId) throws Exception {
+
         String encryptionPassword = config.getEncryptionKey();
-        // Create encrypted file.
 
         // TODO: neaten this.
         File encryptedFile = new File(config.getTempDirectoryForShards().getPath()+ "/" + inputFile.getName()+ ".encrypted");
@@ -58,7 +58,7 @@ public class DefaultStorjClient implements StorjClient {
         EncryptionUtils.encryptFile(inputFile, encryptedFile, encryptionPassword);
 
         // Shard the file.
-        List<Shard> shards = ShardingUtils.shardFile(inputFile, config.getShardSizeInBytes());
+        List<Shard> shards = ShardingUtils.shardFile(encryptedFile, config.getShardSizeInBytes());
 
         // create a frame.
         Frame frame = storjRestClient.createFrame();
@@ -67,14 +67,12 @@ public class DefaultStorjClient implements StorjClient {
         for (Shard shard : shards) {
             AddShardResponse response = storjRestClient.addShardToFrame(frame.getId(), shard, 8);
 
-            storjRestClient.getFrameById(frame.getId());
-
             String address = "ws://" + response.getFarmer().getAddress() + ":" + response.getFarmer().getPort();
             CountDownLatch latch;
             latch = new CountDownLatch(1);
-            ClientManager wsClient = ClientManager.createClient();
             try {
-                wsClient.connectToServer(new WebsocketShardSender(shard, response, latch), new URI(address));
+                WebsocketShardSender sender = new WebsocketShardSender(new URI(address), shard, response, latch);
+                sender.connect();
                 latch.await();
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -84,8 +82,6 @@ public class DefaultStorjClient implements StorjClient {
                 shardFile.delete();
             }
         }
-
-
 
         // Create the bucket entry.
         BucketEntry bucketEntry = new BucketEntry();
@@ -120,37 +116,20 @@ public class DefaultStorjClient implements StorjClient {
         File encryptedOutputFile = null;
         try {
             encryptedOutputFile = File.createTempFile("temp","encrypted");
-            logger.info(encryptedOutputFile.getAbsolutePath());
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-
         Token token = storjRestClient.getTokenForBucket(bucketId, Operation.PULL);
         List<FilePointer> pointers = storjRestClient.getFilePointers(bucketId, bucketEntryId, token.getToken());
 
-        // upload shards.
+        // download shards.
         for (FilePointer pointer : pointers) {
-            CountDownLatch latch;
-            latch = new CountDownLatch(1);
-            ClientManager wsClient = ClientManager.createClient();
             try {
-                wsClient.setDefaultMaxBinaryMessageBufferSize(Integer.MAX_VALUE);
-                wsClient.setDefaultMaxTextMessageBufferSize(Integer.MAX_VALUE);
-                logger.info("CONNECTING TO: " + "ws://" + pointer.getFarmer().getAddress() + ":" + pointer.getFarmer().getPort());
-                final ClientEndpointConfig cec = ClientEndpointConfig.Builder.create().build();
-
-
-                // Some useful debug for finding why Tyrus seems to not receive bytes.
-                AuthorizationModel authModel = new AuthorizationModel();
-                authModel.setToken(pointer.getToken());
-                authModel.setOperation(pointer.getOperation());
-                authModel.setHash(pointer.getHash());
-                logger.info("Token: " + new Gson().toJson(authModel));
-                // Exit here if you want to test outside of the Tyrus client.
-
-                //System.exit(0);
-                wsClient.connectToServer(new WebsocketFileRetriever(pointer, encryptedOutputFile, latch), new URI("ws://" + pointer.getFarmer().getAddress() + ":" + pointer.getFarmer().getPort()));
+                CountDownLatch latch = new CountDownLatch(1);
+                String farmer = "ws://" + pointer.getFarmer().getAddress() + ":" + pointer.getFarmer().getPort();
+                WebsocketFileRetriever c = new WebsocketFileRetriever(new URI(farmer), pointer, encryptedOutputFile, latch);
+                c.connect();
                 latch.await();
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -158,10 +137,16 @@ public class DefaultStorjClient implements StorjClient {
         }
 
         try {
+            logger.info("Encrypted file: " + encryptedOutputFile.getAbsolutePath());
             EncryptionUtils.decryptFile(encryptedOutputFile, outputFile, config.getEncryptionKey());
+            logger.info("Decrypted file: " + outputFile.getAbsolutePath());
+
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        System.out.println(outputFile.getPath());
+
         return outputFile;
     }
 

@@ -6,7 +6,7 @@
 
     <groupId>storj</groupId>
     <artifactId>storj-bridge-rest-client</artifactId>
-    <version>0.1</version>
+    <version>0.5</version>
     <packaging>jar</packaging>
 
     <name>Java based rest client for the storj.io.client.DefaultStorjClient project.</name>

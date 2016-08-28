@@ -51,7 +51,7 @@ public class ShardingUtils {
 
             // create shard object pointing to the file.
             Shard shard = new Shard();
-            shard.setSize(length);
+            shard.setSize(fileShard.length());
             shard.setHash(new String(EncryptionUtils.getRipemdSha256File(fileShard)));
             shard.setPath(fileShard.getAbsolutePath());
             shard.setIndex(index++);
