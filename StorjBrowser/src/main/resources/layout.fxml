@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.image.*?>
+
+<?import org.controlsfx.control.TaskProgressView?>
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.76-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+    <children>
+        <MenuBar layoutY="2.0" prefHeight="23.0" prefWidth="800">
+            <menus>
+                <Menu mnemonicParsing="false" text="Accounts">
+                    <items>
+                        <MenuItem mnemonicParsing="false" text="New..." onAction="#handleAddNewSite"/>
+                        <MenuItem mnemonicParsing="false" text="Open..." onAction="#handleOpenSite"/>
+                        <MenuItem mnemonicParsing="false" text="Delete..." onAction="#handleDeleteSite"/>
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Files">
+                    <items>
+                        <MenuItem mnemonicParsing="false" text="Upload" onAction="#handleFileUpload" />
+                        <MenuItem mnemonicParsing="false" text="Download" onAction="#handleFileDownload" />
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Buckets">
+                    <items>
+                        <MenuItem mnemonicParsing="false" text="Create" onAction="#handleCreateBucket" />
+                        <MenuItem mnemonicParsing="false" text="Delete"  onAction="#handleDeleteBucket"/>
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Help">
+                    <items>
+                        <MenuItem mnemonicParsing="false" text="About" onAction="#handleAbout" />
+                    </items>
+                </Menu>
+            </menus>
+        </MenuBar>
+        <fx:define>
+            <Image fx:id="imgStorj" url="images/storj.png" />
+        </fx:define>
+        <ImageView image="$imgStorj"/>
+
+        <VBox layoutX="0" layoutY="175.0" prefHeight="600.0" prefWidth="800.0">
+            <HBox layoutY="27.0" prefHeight="229.0" prefWidth="800.0">
+                <ListView fx:id="bucketView" layoutX="33.0" layoutY="124.0" prefHeight="229.0" prefWidth="403.0" />
+                <VBox layoutX="0" prefHeight="600.0" prefWidth="800.0">
+
+                <TableView fx:id="tableView" prefHeight="341.0" prefWidth="399.0">
+                    <columns>
+                        <TableColumn prefWidth="100.0" text="File" fx:id="fileName"/>
+                        <TableColumn prefWidth="100.0" text="Size" fx:id="size" />
+                        <TableColumn prefWidth="100.0" text="Type" fx:id="type"/>
+                        <TableColumn prefWidth="100.0" text="Id" fx:id="id"/>
+
+                    </columns>
+                </TableView>
+                <HBox layoutY="27.0" prefHeight="229.0" prefWidth="800.0">
+                  <children>
+                      <fx:define>
+                          <Image fx:id="imgDownload" url="images/download.png" />
+                      </fx:define>
+                      <fx:define>
+                          <Image fx:id="imgUpload" url="images/upload.png" />
+                      </fx:define>
+                      <fx:define>
+                          <Image fx:id="imgDelete" url="images/delete.png" />
+                      </fx:define>
+                      <fx:define>
+                          <Image fx:id="imgRefresh" url="images/refresh.png" />
+                      </fx:define>
+                     <Button fx:id="download" mnemonicParsing="false" text="Download" onAction="#handleFileDownload">
+                         <graphic>
+                             <ImageView image="$imgDownload"/>
+                         </graphic>
+                     </Button>
+                     <Button fx:id="upload" mnemonicParsing="false" text="Upload" onAction="#handleFileUpload">
+                      <graphic>
+                          <ImageView image="$imgUpload"/>
+                      </graphic>
+                      </Button>
+                     <Button fx:id="delete" mnemonicParsing="false" text="Delete" onAction="#handleDelete">
+                      <graphic>
+                          <ImageView image="$imgDelete"/>
+                      </graphic>
+                      </Button>
+                     <Button fx:id="refresh" mnemonicParsing="false" text="Refresh" onAction="#handleRefresh">
+                      <graphic>
+                          <ImageView image="$imgRefresh"/>
+                      </graphic>
+                      </Button>
+                  </children></HBox>
+            </VBox>
+
+            </HBox>
+
+            <TaskProgressView prefHeight="200.0" prefWidth="800.0" fx:id="progressView" />
+
+        </VBox>
+
+    </children>
+</AnchorPane>

@@ -7,13 +7,34 @@
 	<groupId>storj</groupId>
 	<artifactId>parent-project</artifactId>
 	<packaging>pom</packaging>
-	<version>1.1-SNAPSHOT</version>
+	<version>${version}</version>
+	
+	<name>Storj Java Parent Project</name>
+	<url>http://storj.io</url>
 
+	<developers>
+        <developer>
+            <id>NutterzUK</id>
+            <name>Stephen Nutbrown</name>
+            <email>steveswfc@gmail.com</email>
+            <roles>
+                <role>developer</role>
+            </roles>
+            <timezone>Europe/London</timezone>
+            <properties>
+                <picUrl>http://www.spindroid.co.uk/imageHost/me.jpg</picUrl>
+            </properties>
+        </developer>
+    </developers>
 
 	<modules>
 		<module>storj-bridge-rest-client</module>
 		<module>storj-client</module>
+		<module>StorjBrowser</module>
 	</modules>
-
+	
+	<properties>
+		<version>0.0.1-Alpha</version>
+	</properties>
 
 </project>

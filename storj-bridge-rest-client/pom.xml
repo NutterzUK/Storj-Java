@@ -6,10 +6,10 @@
 
     <groupId>storj</groupId>
     <artifactId>storj-bridge-rest-client</artifactId>
-    <version>0.5</version>
+    <version>${version}</version>
     <packaging>jar</packaging>
 
-    <name>Java based rest client for the storj.io.client.DefaultStorjClient project.</name>
+    <name>Storj Rest Client</name>
     <url>http://storj.io</url>
 
     <developers>
@@ -30,7 +30,7 @@
 	<parent>
 		<groupId>storj</groupId>
 		<artifactId>parent-project</artifactId>
-		<version>1.0-SNAPSHOT</version>
+		<version>${version}</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 

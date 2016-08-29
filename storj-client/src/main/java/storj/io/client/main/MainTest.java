@@ -22,7 +22,7 @@ public class MainTest {
         createBucket(storj, "testy");
 
         String bucketId = findFirstBucket(storj).getId();
-        String bucketEntryId = uploadFile(storj, new File("C:\\Users\\steve\\Desktop\\cat.jpg"), bucketId);
+        String bucketEntryId = uploadFile(storj, new File("C:\\Users\\steve\\Desktop\\pug.txt"), bucketId);
         storj.downloadFile(bucketId, bucketEntryId, new File("C:\\Users\\steve\\Desktop\\cat2.jpg"));
 
     }

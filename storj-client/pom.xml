@@ -6,10 +6,10 @@
 
     <groupId>storj</groupId>
     <artifactId>storj-client</artifactId>
-	<version>0.5</version>
+	<version>${version}</version>
     <packaging>jar</packaging>
 	
-	<name>Client for the storj.io.client.DefaultStorjClient project.</name>
+	<name>Storj High Level Client</name>
     <url>http://storj.io</url>
 
     <developers>
@@ -30,7 +30,7 @@
 	<parent>
 		<groupId>storj</groupId>
 		<artifactId>parent-project</artifactId>
-		<version>1.0-SNAPSHOT</version>
+		<version>${version}</version>
 		<relativePath>../</relativePath>
 	</parent>
 	
@@ -38,7 +38,7 @@
 		<dependency>
 			<groupId>storj</groupId>
 			<artifactId>storj-bridge-rest-client</artifactId>
-			<version>0.5</version>
+			<version>${version}</version>
 		</dependency>
 
         <!-- https://mvnrepository.com/artifact/org.bouncycastle/bcpkix-jdk15on -->
@@ -68,13 +68,13 @@
         </dependency>
 
         <!-- for guessing mime types -->
-        <!-- https://mvnrepository.com/artifact/com.j256.simplemagic/simplemagic -->
+        <!-- https://mvnrepository.com/artifact/com.j256.simplemagic/simplemagic
         <dependency>
             <groupId>com.j256.simplemagic</groupId>
             <artifactId>simplemagic</artifactId>
             <version>1.1</version>
         </dependency>
-
+-->
         <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
         <dependency>
             <groupId>com.google.guava</groupId>

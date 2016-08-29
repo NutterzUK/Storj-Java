@@ -1,12 +1,8 @@
 package storj.io.client;
 
-import com.google.gson.Gson;
-import com.j256.simplemagic.ContentInfoUtil;
-import org.java_websocket.drafts.Draft_10;
-import org.java_websocket.drafts.Draft_17;
+
 import storj.io.client.encryption.EncryptionUtils;
 import storj.io.client.sharding.ShardingUtils;
-import storj.io.client.websockets.AuthorizationModel;
 import storj.io.client.websockets.WebsocketFileRetriever;
 import storj.io.client.websockets.WebsocketShardSender;
 import storj.io.restclient.model.*;
@@ -15,6 +11,7 @@ import storj.io.restclient.rest.StorjRestClient;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.logging.Logger;
@@ -86,8 +83,7 @@ public class DefaultStorjClient implements StorjClient {
         // Create the bucket entry.
         BucketEntry bucketEntry = new BucketEntry();
         // Library for getting mime type (Should work on linux which Files.probe won't always).
-        ContentInfoUtil mimeTypeFinder = new ContentInfoUtil();
-        bucketEntry.setMimetype(mimeTypeFinder.findMatch(inputFile).getMimeType());
+        bucketEntry.setMimetype(Files.probeContentType(inputFile.toPath()));
         bucketEntry.setFilename(inputFile.getName());
         bucketEntry.setFrame(frame.getId());
         bucketEntry.setSize(encryptedFile.length());
