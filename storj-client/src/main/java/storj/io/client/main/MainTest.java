@@ -1,19 +1,20 @@
 package storj.io.client.main;
 
+import java.io.File;
+import java.util.List;
+
 import storj.io.client.DefaultStorjClient;
 import storj.io.client.StorjClient;
 import storj.io.client.StorjConfiguration;
-import storj.io.restclient.model.*;
-
-import java.io.File;
-import java.util.List;
+import storj.io.client.exceptions.StorjFileException;
+import storj.io.restclient.model.Bucket;
 
 /**
  * Created by Stephen Nutbrown on 09/07/2016.
  */
 public class MainTest {
 
-    public static void main(String[] args){
+    public static void main(String[] args) throws StorjFileException{
         //createUser();
         //System.exit(0);
         StorjConfiguration configuration = new StorjConfiguration(CodeTestUtils.getEncryptionKey(), CodeTestUtils.getStorjUsername(), CodeTestUtils.getStorjPassword());

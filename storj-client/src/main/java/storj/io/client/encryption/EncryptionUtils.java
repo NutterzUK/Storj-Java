@@ -1,10 +1,11 @@
 package storj.io.client.encryption;
 
-import com.google.common.hash.Hashing;
+import java.io.File;
+
 import org.bouncycastle.crypto.digests.RIPEMD160Digest;
 import org.bouncycastle.util.encoders.Hex;
 
-import java.io.File;
+import com.google.common.hash.Hashing;
 
 /**
  * Created by steve on 03/08/2016.

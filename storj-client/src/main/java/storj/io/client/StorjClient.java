@@ -1,11 +1,13 @@
 package storj.io.client;
 
+import java.io.File;
+import java.util.List;
+
+import storj.io.client.exceptions.StorjException;
+import storj.io.client.exceptions.StorjFileException;
 import storj.io.restclient.model.Bucket;
 import storj.io.restclient.model.BucketEntry;
 import storj.io.restclient.model.User;
-
-import java.io.File;
-import java.util.List;
 
 /**
  * Created by steve on 03/08/2016.
@@ -31,9 +33,10 @@ public interface StorjClient {
      * @param inputFile the file to upload.
      * @param bucketId  the ID of the bucket to upload to.
      * @return A bucket entry representing the file on the bridge.
+     * @throws StorjException 
      * @throws Exception Problem uploading file.
      */
-    BucketEntry uploadFile(File inputFile, String bucketId) throws Exception;
+    BucketEntry uploadFile(File inputFile, String bucketId) throws StorjFileException, StorjException;
 
     /**
      * Upload a file to the storj network.
@@ -51,8 +54,9 @@ public interface StorjClient {
      *
      * @param bucketEntry the Bucket entry to retrieve.
      * @return A file pointer to the retrieved file.
+     * @throws StorjFileException 
      */
-    File downloadFile(BucketEntry bucketEntry, File outputFile);
+    File downloadFile(BucketEntry bucketEntry, File outputFile) throws StorjFileException;
 
     /**
      * Download a file into the temp directory specified in the storj.io.client.StorjConfiguration.
@@ -62,8 +66,9 @@ public interface StorjClient {
      * @param bucketEntryId the ID of the bucketEntry
      * @param outputFile    The file to output to.
      * @return A file pointer to the retrieved file.
+     * @throws StorjFileException 
      */
-    File downloadFile(String bucketId, String bucketEntryId, File outputFile);
+    File downloadFile(String bucketId, String bucketEntryId, File outputFile) throws StorjFileException;
 
     /**
      * Get all buckets.
