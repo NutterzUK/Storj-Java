@@ -2,6 +2,7 @@ package sample;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.sun.jersey.api.client.UniformInterfaceException;
 import javafx.application.Platform;
 
 import javafx.collections.ObservableList;
@@ -92,8 +93,6 @@ public class Controller implements Initializable{
                 new PropertyValueFactory<BucketEntryTableView,String>("id")
         );
 
-
-
         tableValues = tableView.getItems();
 
         bucketView.getSelectionModel().selectedItemProperty().addListener(
@@ -151,7 +150,7 @@ public class Controller implements Initializable{
         if(client == null){
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Storj browser");
-            String s = "This is a very early version of the Storj Browser, based on a Java client by NutterzUK.";
+            String s = "This is a very early version of the Storj Browser.\n\n Version: 0.0.1-Alpha";
             alert.setContentText(s);
             alert.showAndWait();
             return false;
@@ -304,8 +303,13 @@ public class Controller implements Initializable{
     }
 
     private void runTask(Task<Void> task, String name){
-        exec.submit(task);
-        progressView.getTasks().add(task);
+        task.setOnFailed(e -> {
+          showException(e.getSource().getException());
+        });
+        Platform.runLater(()-> {
+            exec.submit(task);
+            progressView.getTasks().add(task);
+        });
     }
 
     @FXML
@@ -485,17 +489,33 @@ public class Controller implements Initializable{
         };
     }
 
-    private void showException(Exception exception) {
+    private void showException(Throwable throwable) {
+        String genericError = "Please feel to report it as an issue on github with the stack trace below.";
+        String errorToShow = genericError;
+        String restResponse = null;
 
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error");
-        alert.setHeaderText("Oops");
-        alert.setContentText("Something went wrong. Please feel to report it as an issue on github with the stack trace below.");
+        if(throwable instanceof UniformInterfaceException){
+            UniformInterfaceException restException = (UniformInterfaceException) throwable;
+            int status = restException.getResponse().getStatus();
+            String reason = restException.getResponse().getStatusInfo().getReasonPhrase();
+            errorToShow = "The bridge returned a status of " + status + " with reason: \"" + reason +
+                    "\". An exception trace is below, and if you believe this is an error, please report it on GitHub.";
+            restResponse = restException.getResponse().toString();
+        }
+
+        alert.setHeaderText("Something went wrong.");
+        alert.setContentText(errorToShow);
 
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
-        exception.printStackTrace(pw);
+        throwable.printStackTrace(pw);
         String exceptionText = sw.toString();
+
+        if(restResponse != null){
+            exceptionText += "\n\nResponse from Server:\n\n" + restResponse;
+        }
 
         Label label = new Label("The exception stacktrace was:");
 
