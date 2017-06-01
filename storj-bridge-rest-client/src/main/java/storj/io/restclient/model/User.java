@@ -17,13 +17,41 @@ public class User {
     private String password;
     private String redirect;
     private Long __nonce;
-
+    @JsonIgnore
+    private Preferences preferences;
     @JsonIgnore
     private boolean activated;
-
     private Date created;
     private String id;
+    @JsonIgnore
+    private String uuid;
     private String pubkey;
+    @JsonIgnore
+    private boolean isFreeTier;
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public boolean isIsFreeTier() {
+        return isFreeTier;
+    }
+
+    public void setIsFreeTier(boolean freeTier) {
+        isFreeTier = freeTier;
+    }
+
+    public Preferences getPreferences() {
+        return preferences;
+    }
+
+    public void setPreferences(Preferences preferences) {
+        this.preferences = preferences;
+    }
 
     public String getPubkey() {
         return pubkey;

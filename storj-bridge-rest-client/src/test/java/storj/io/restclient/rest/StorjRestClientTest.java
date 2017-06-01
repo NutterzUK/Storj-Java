@@ -37,7 +37,7 @@ public class StorjRestClientTest {
     private static final boolean TEST_AGAINST_LIVE_SERVER = true;
     private static final String TEST_LIVE_PASSWORD = "pass";
     private static final String TEST_LIVE_USERNAME = "user";
-    private static final String TEST_LIVE_API_ROOT = "http://api.storj.io";
+    private static final String TEST_LIVE_API_ROOT = "https://api.storj.io";
 
     // Mock server.
     private MockHttpServer server;
